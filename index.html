@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sulmara Vessel Tracker</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0d1b2e;
+      color: #e0e8f0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    #header {
+      background: #071428;
+      border-bottom: 1px solid #1e3a5f;
+      padding: 0 18px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 10;
+    }
+    #header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e0e8f0;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    #vessel-count { font-size: 12px; color: #6b9ac4; }
+    .live-badge {
+      background: #0f6e56;
+      color: #9fe1cb;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      letter-spacing: 0.5px;
+    }
+    .live-dot {
+      width: 6px; height: 6px;
+      background: #5dcaa5;
+      border-radius: 50%;
+      animation: pulse 1.4s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* ── Body ── */
+    #body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      width: 260px;
+      flex-shrink: 0;
+      background: #0d1b2e;
+      border-right: 1px solid #1e3a5f;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #sidebar-header {
+      padding: 10px 14px;
+      border-bottom: 1px solid #1e3a5f;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    #sidebar-header span {
+      font-size: 11px;
+      font-weight: 600;
+      color: #4a7fa5;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    #add-btn {
+      background: #1a3a5c;
+      color: #7ab8e0;
+      border: 1px solid #2a5a8c;
+      border-radius: 5px;
+      padding: 4px 11px;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    #add-btn:hover { background: #234d78; }
+    #vessel-list { flex: 1; overflow-y: auto; }
+    #vessel-list::-webkit-scrollbar { width: 4px; }
+    #vessel-list::-webkit-scrollbar-track { background: transparent; }
+    #vessel-list::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 2px; }
+
+    .vessel-item {
+      padding: 11px 14px;
+      border-bottom: 1px solid #132236;
+      cursor: pointer;
+      transition: background 0.12s;
+    }
+    .vessel-item:hover { background: #122033; }
+    .vessel-item.active {
+      background: #0d2640;
+      border-left: 3px solid #378add;
+      padding-left: 11px;
+    }
+    .v-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #d0e4f4;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 3px;
+    }
+    .vessel-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .v-meta { font-size: 11px; color: #4a7fa5; margin-top: 1px; }
+    .v-stats {
+      font-size: 11px;
+      color: #7ab8e0;
+      margin-top: 3px;
+      display: flex;
+      gap: 10px;
+    }
+    .v-stats b { color: #a8d4f0; }
+    .v-status {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 8px;
+      margin-top: 4px;
+      letter-spacing: 0.2px;
+    }
+    .s-underway   { background: #0d3020; color: #5dcaa5; }
+    .s-anchored   { background: #2a1f0a; color: #f0c060; }
+    .s-moored     { background: #0a2020; color: #5db8b8; }
+    .s-restricted { background: #2a1010; color: #e08080; }
+    .v-blurb {
+      font-size: 11px;
+      color: #6b9ac4;
+      line-height: 1.55;
+      margin-top: 7px;
+      padding-top: 7px;
+      border-top: 1px solid #132236;
+    }
+
+    /* ── Map ── */
+    #map-area { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+    #map { width: 100%; height: 100%; }
+
+    /* ── Info Panel ── */
+    #info-panel {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 210px;
+      background: rgba(7, 20, 40, 0.93);
+      border: 1px solid #1e3a5f;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 11px;
+      z-index: 500;
+      backdrop-filter: blur(6px);
+    }
+    #info-panel .p-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #d0e4f4;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #1e3a5f;
+    }
+    .i-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .i-label { color: #4a7fa5; }
+    .i-val { font-weight: 500; color: #a8d4f0; text-align: right; max-width: 120px; font-size: 11px; }
+    .i-sep { border-top: 1px solid #1e3a5f; margin: 6px 0; }
+
+    /* ── Legend ── */
+    #legend {
+      position: absolute;
+      bottom: 34px;
+      right: 12px;
+      background: rgba(7, 20, 40, 0.9);
+      border: 1px solid #1e3a5f;
+      border-radius: 7px;
+      padding: 8px 11px;
+      font-size: 10px;
+      z-index: 500;
+    }
+    .leg-title { font-weight: 600; color: #7ab8e0; margin-bottom: 5px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .leg-row { display: flex; align-items: center; gap: 7px; margin-bottom: 3px; color: #4a7fa5; }
+    .leg-line { width: 20px; height: 3px; border-radius: 2px; }
+
+    /* ── Timeline ── */
+    #timeline-bar {
+      height: 44px;
+      background: #071428;
+      border-top: 1px solid #1e3a5f;
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+    #timeline-bar label { font-size: 11px; color: #4a7fa5; white-space: nowrap; }
+    #timeline-slider { flex: 1; min-width: 0; accent-color: #378add; }
+    #time-display { font-size: 11px; font-weight: 500; color: #7ab8e0; min-width: 95px; }
+    #play-btn {
+      background: #1a3a5c;
+      color: #7ab8e0;
+      border: 1px solid #2a5a8c;
+      border-radius: 5px;
+      padding: 5px 12px;
+      font-size: 11px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    #play-btn:hover { background: #234d78; }
+    #speed-select {
+      font-size: 11px;
+      padding: 3px 5px;
+      border-radius: 4px;
+      border: 1px solid #1e3a5f;
+      background: #0d1b2e;
+      color: #7ab8e0;
+    }
+
+    /* ── Modal ── */
+    #modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-overlay.show { display: flex; }
+    .modal-box {
+      background: #0d1b2e;
+      border: 1px solid #1e3a5f;
+      border-radius: 10px;
+      padding: 20px;
+      width: 340px;
+      max-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-box h3 { font-size: 15px; font-weight: 600; color: #d0e4f4; margin-bottom: 13px; }
+    .modal-search input {
+      width: 100%;
+      padding: 8px 11px;
+      font-size: 13px;
+      border: 1px solid #1e3a5f;
+      border-radius: 6px;
+      background: #071428;
+      color: #d0e4f4;
+      outline: none;
+    }
+    .modal-search input:focus { border-color: #378add; }
+    #modal-status { font-size: 11px; color: #4a7fa5; margin: 8px 0 5px; min-height: 16px; }
+    #modal-results {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid #1e3a5f;
+      border-radius: 6px;
+      min-height: 80px;
+    }
+    #modal-results::-webkit-scrollbar { width: 4px; }
+    #modal-results::-webkit-scrollbar-thumb { background: #1e3a5f; border-radius: 2px; }
+    .r-item {
+      padding: 10px 11px;
+      border-bottom: 1px solid #132236;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .r-item:last-child { border-bottom: none; }
+    .r-item:hover { background: #122033; }
+    .r-item.selected { background: #0d2640; border-left: 2px solid #378add; padding-left: 9px; }
+    .r-name { font-size: 13px; font-weight: 600; color: #d0e4f4; }
+    .r-meta { font-size: 11px; color: #4a7fa5; margin-top: 2px; }
+    .r-empty { padding: 24px; text-align: center; color: #4a7fa5; font-size: 12px; }
+    .modal-actions { display: flex; gap: 9px; margin-top: 13px; }
+    .modal-actions button { flex: 1; padding: 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 500; }
+    .btn-cancel { background: transparent; border: 1px solid #1e3a5f; color: #7ab8e0; }
+    .btn-cancel:hover { background: #122033; }
+    .btn-add { background: #185fa5; border: none; color: #d0e4f4; }
+    .btn-add:hover { background: #1d76cc; }
+    .btn-add:disabled { opacity: 0.4; cursor: default; }
+
+    /* Leaflet overrides */
+    .leaflet-control-attribution { font-size: 9px !important; opacity: 0.6; }
+    .leaflet-tooltip {
+      background: rgba(7,20,40,0.92) !important;
+      border: 1px solid #1e3a5f !important;
+      color: #d0e4f4 !important;
+      font-size: 12px !important;
+      border-radius: 5px !important;
+      padding: 5px 8px !important;
+    }
+    .leaflet-tooltip b { color: #7ab8e0; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div id="header">
+    <h1>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <path d="M3 17L12 5L21 17" stroke="#5dcaa5" stroke-width="2.2" stroke-linejoin="round"/>
+        <path d="M1 19L23 19" stroke="#378add" stroke-width="1.8"/>
+        <path d="M5 19L4 21L20 21L19 19" stroke="#378add" stroke-width="1.2"/>
+      </svg>
+      Sulmara Vessel Tracker
+    </h1>
+    <div class="header-right">
+      <span id="vessel-count">3 vessels tracked</span>
+      <div class="live-badge"><div class="live-dot"></div>LIVE AIS</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div id="body">
+
+    <!-- Sidebar -->
+    <div id="sidebar">
+      <div id="sidebar-header">
+        <span>Fleet</span>
+        <button id="add-btn" onclick="openModal()">+ Add vessel</button>
+      </div>
+      <div id="vessel-list"></div>
+    </div>
+
+    <!-- Map -->
+    <div id="map-area">
+      <div id="map"></div>
+
+      <!-- Info panel -->
+      <div id="info-panel">
+        <div class="p-title" id="ip-name">Select a vessel</div>
+        <div id="ip-body" style="color:#4a7fa5;font-size:11px;">Click a vessel on the map or in the sidebar to view its AIS data.</div>
+      </div>
+
+      <!-- Legend -->
+      <div id="legend">
+        <div class="leg-title">Track speed</div>
+        <div class="leg-row"><div class="leg-line" style="background:#1d9e75"></div>&gt; 15 kts</div>
+        <div class="leg-row"><div class="leg-line" style="background:#378add"></div>8 – 15 kts</div>
+        <div class="leg-row"><div class="leg-line" style="background:#ba7517"></div>&lt; 8 kts</div>
+        <div class="leg-row"><div class="leg-line" style="background:transparent;border-top:2px dashed #7f77dd;height:0;"></div>Planned route</div>
+        <div class="leg-row" style="margin-top:4px;border-top:1px solid #1e3a5f;padding-top:5px;">
+          <div style="width:20px;height:2px;background:#ffdc32;"></div>COG vector
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div id="timeline-bar">
+    <button id="play-btn" onclick="togglePlay()">▶ Play</button>
+    <label>Track history:</label>
+    <input type="range" id="timeline-slider" min="0" max="100" value="100" step="1" oninput="onSlider(this.value)" />
+    <span id="time-display">Now (live)</span>
+    <label>Speed:</label>
+    <select id="speed-select">
+      <option value="1">1×</option>
+      <option value="2">2×</option>
+      <option value="5">5×</option>
+    </select>
+  </div>
+
+  <!-- Add vessel modal -->
+  <div id="modal-overlay">
+    <div class="modal-box">
+      <h3>Search &amp; add vessel</h3>
+      <div class="modal-search">
+        <input id="search-input" placeholder="Type vessel name, MMSI, IMO or type…" oninput="onSearch(this.value)" autocomplete="off" />
+      </div>
+      <div id="modal-status">Start typing to search vessels</div>
+      <div id="modal-results"><div class="r-empty">Results will appear here</div></div>
+      <div class="modal-actions">
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn-add" id="btn-add-confirm" onclick="confirmAdd()" disabled>Add vessel</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ─────────────────────────────────────────────
+//  Config & helpers
+// ─────────────────────────────────────────────
+const COLORS = ['#378add','#1d9e75','#d85a30','#7f77dd','#e0a020','#d4537e','#5dcaa5','#f09595'];
+
+function genTrack(lat, lon, hdg, spd, n) {
+  const pts = [], rad = hdg * Math.PI / 180;
+  let la = lat, lo = lon;
+  for (let i = 0; i < n; i++) {
+    const t = (n - 1 - i) / (n - 1);
+    la -= Math.cos(rad) * spd * 0.00013 + (Math.random() - 0.5) * 0.02;
+    lo -= Math.sin(rad) * spd * 0.00016 + (Math.random() - 0.5) * 0.02;
+    pts.unshift({ lat: la, lon: lo, spd: Math.max(0, spd + (Math.random() - 0.5) * 1.5), hdg: hdg + (Math.random() - 0.5) * 7, ts: Date.now() - t * 3600000 });
+  }
+  return pts;
+}
+
+function genRoute(lat, lon, hdg, spd, n) {
+  if (spd < 1) return [{ lat, lon }];
+  const wps = [{ lat, lon }];
+  let la = lat, lo = lon;
+  const rad = hdg * Math.PI / 180;
+  for (let i = 0; i < n; i++) {
+    la += Math.cos(rad) * spd * 0.003 + (Math.random() - 0.5) * 0.45;
+    lo += Math.sin(rad) * spd * 0.004 + (Math.random() - 0.5) * 0.45;
+    wps.push({ lat: la, lon: lo });
+  }
+  return wps;
+}
+
+function blurb(v) {
+  const spd = v.sog < 1 ? 'currently stationary' : `underway at ${v.sog.toFixed(1)} kts`;
+  const dest = v.dest ? `en route to ${v.dest}` : 'no declared destination';
+  const eta = v.eta && v.eta !== '—' ? `, ETA ${v.eta}` : '';
+  return `${cap(v.type)} in the ${v.area}, ${spd} and ${dest}${eta}. Last port: ${v.lastPort || 'unknown'}.`;
+}
+
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function speedColor(s) {
+  if (s > 15) return '#1d9e75';
+  if (s >= 8)  return '#378add';
+  return '#ba7517';
+}
+
+function statusClass(s) {
+  const m = { underway:'s-underway', anchored:'s-anchored', moored:'s-moored', restricted:'s-restricted' };
+  return m[s.toLowerCase().split(' ')[0]] || 's-underway';
+}
+
+// ─────────────────────────────────────────────
+//  Vessel data  (real AIS from VesselFinder, April 2026)
+// ─────────────────────────────────────────────
+const FLEET_SEED = [
+  {
+    id:1, name:'Ocean Marlin', mmsi:'257768000', imo:'9669213', callsign:'LAWV8',
+    type:'offshore supply vessel', flag:'🇳🇴', flagCode:'NO',
+    dest:'500M CPA ROV OPS', sog:3.2, heading:118, cog:120, rot:0.3,
+    status:'Restricted', draft:5.5, length:66.8, beam:16.0, gt:2298, built:2014,
+    color:COLORS[0], lat:33.85, lon:13.42,
+    area:'East Mediterranean', lastPort:'Porto Empedocle, Italy', eta:'Apr 16, 08:30'
+  },
+  {
+    id:2, name:'VOS Gorgeous', mmsi:'235103024', imo:'9680530', callsign:'2HEN8',
+    type:'standby safety vessel', flag:'🇬🇧', flagCode:'GB',
+    dest:'SURVEY CPA 500 M', sog:4.6, heading:55, cog:57, rot:0.1,
+    status:'Restricted', draft:6.0, length:60.0, beam:15.0, gt:1969, built:2015,
+    color:COLORS[1], lat:56.45, lon:3.85,
+    area:'North Sea', lastPort:'Eemshaven, Netherlands', eta:'Apr 19, 23:00'
+  },
+  {
+    id:3, name:'Ross Eagle', mmsi:'258156000', imo:'9249465', callsign:'JXYX',
+    type:'offshore supply vessel', flag:'🇳🇴', flagCode:'NO',
+    dest:'MAAS ENTRANCE', sog:0.5, heading:245, cog:248, rot:0.0,
+    status:'Restricted', draft:4.5, length:72.0, beam:16.0, gt:2244, built:2003,
+    color:COLORS[2], lat:51.98, lon:4.18,
+    area:'North Sea, near Rotterdam', lastPort:'Rotterdam Waalhaven, Netherlands', eta:'Apr 16, 20:30'
+  }
+];
+
+FLEET_SEED.forEach(v => {
+  v.blurb = blurb(v);
+  v.track = genTrack(v.lat, v.lon, v.heading, v.sog, 40);
+  v.track.push({ lat: v.lat, lon: v.lon, spd: v.sog, hdg: v.heading, ts: Date.now() });
+  v.route = genRoute(v.lat, v.lon, v.heading, v.sog, 5);
+});
+
+// Extended search database
+const VESSEL_DB = [
+  ...FLEET_SEED,
+  { id:10, name:'Ever Given', mmsi:'353136000', imo:'9811000', callsign:'3EEA3', type:'container ship', flag:'🇵🇦', flagCode:'PA', dest:'NLRTM', sog:13.5, heading:315, cog:312, rot:0, status:'Underway', draft:14.5, length:400, beam:59, gt:220940, built:2018, color:COLORS[3], lat:29.9, lon:32.5, area:'Red Sea', lastPort:'Suez Canal', eta:'—' },
+  { id:11, name:'Queen Mary 2', mmsi:'310627000', imo:'9241061', callsign:'ZCZE6', type:'passenger vessel', flag:'🇧🇲', flagCode:'BM', dest:'GBSOU', sog:22.1, heading:45, cog:46, rot:0.1, status:'Underway', draft:10.3, length:345, beam:41, gt:148528, built:2003, color:COLORS[4], lat:47.5, lon:-20.0, area:'North Atlantic', lastPort:'New York', eta:'—' },
+  { id:12, name:'Nordic Breeze', mmsi:'219765432', imo:'9512345', callsign:'OZBD', type:'tanker', flag:'🇩🇰', flagCode:'DK', dest:'GBIMM', sog:11.0, heading:290, cog:288, rot:0, status:'Underway', draft:13.7, length:183, beam:32, gt:28000, built:2010, color:COLORS[5], lat:55.5, lon:4.0, area:'North Sea', lastPort:'Copenhagen', eta:'—' },
+  { id:13, name:'Atlantic Fortune', mmsi:'235987654', imo:'9234567', callsign:'MABF2', type:'cargo vessel', flag:'🇬🇧', flagCode:'GB', dest:'USNYC', sog:16.1, heading:270, cog:268, rot:-0.1, status:'Underway', draft:9.3, length:190, beam:28, gt:22000, built:2008, color:COLORS[6], lat:45.0, lon:-30.0, area:'North Atlantic', lastPort:'Liverpool', eta:'—' },
+  { id:14, name:'Arctic Aurora', mmsi:'257123456', imo:'9456789', callsign:'LAXF', type:'research vessel', flag:'🇳🇴', flagCode:'NO', dest:'NOSVG', sog:9.2, heading:200, cog:202, rot:0, status:'Underway', draft:6.5, length:98, beam:18, gt:6300, built:2012, color:COLORS[7], lat:70.5, lon:20.0, area:'Norwegian Sea', lastPort:'Tromsø', eta:'—' },
+];
+VESSEL_DB.forEach(v => { if (!v.blurb) v.blurb = blurb(v); if (!v.track) { v.track = genTrack(v.lat, v.lon, v.heading, v.sog, 40); v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()}); v.route = genRoute(v.lat,v.lon,v.heading,v.sog,5); } });
+
+// ─────────────────────────────────────────────
+//  State
+// ─────────────────────────────────────────────
+let vessels    = FLEET_SEED.slice();
+let selectedId = null;
+let nextId     = 20;
+let sliderVal  = 100;
+let isPlaying  = false;
+let playTimer  = null;
+let map, layers = {};
+let searchPick = null;
+let searchTimer = null;
+
+// ─────────────────────────────────────────────
+//  Map init — tries multiple tile sources
+// ─────────────────────────────────────────────
+function initMap() {
+  map = L.map('map', { zoomControl: true, attributionControl: true }).setView([50, 8], 4);
+
+  // Esri World Imagery (satellite) — works without API key, CORS-friendly
+  const satellite = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { attribution: 'Tiles © Esri, Maxar, Earthstar Geographics', maxZoom: 18, crossOrigin: true }
+  );
+
+  // Esri place-name labels overlay
+  const labels = L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+    { attribution: '', maxZoom: 18, crossOrigin: true, opacity: 0.9 }
+  );
+
+  // OpenStreetMap fallback
+  const osm = L.tileLayer(
+    'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors', maxZoom: 19 }
+  );
+
+  // OpenSeaMap nautical overlay
+  const seamap = L.tileLayer(
+    'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+    { attribution: '© OpenSeaMap contributors', maxZoom: 18, opacity: 0.7 }
+  );
+
+  satellite.addTo(map);
+  labels.addTo(map);
+
+  L.control.layers(
+    { '🛰 Satellite': satellite, '🗺 Street map': osm },
+    { 'Place labels': labels, '⚓ Nautical marks': seamap },
+    { position: 'topright', collapsed: true }
+  ).addTo(map);
+}
+
+// ─────────────────────────────────────────────
+//  Drawing
+// ─────────────────────────────────────────────
+function vesselIcon(color, hdg, selected) {
+  const s = selected ? 20 : 15;
+  const svg = `<svg width="${s*2}" height="${s*2}" viewBox="-${s} -${s} ${s*2} ${s*2}" xmlns="http://www.w3.org/2000/svg">
+    <g transform="rotate(${hdg})">
+      <polygon points="0,${-s*0.82} ${s*0.46},${s*0.72} 0,${s*0.42} ${-s*0.46},${s*0.72}"
+               fill="${color}" stroke="white" stroke-width="${selected?2:1.5}" stroke-linejoin="round"/>
+    </g>
+    ${selected ? `<circle cx="0" cy="0" r="${s-1}" fill="none" stroke="${color}" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.8"/>` : ''}
+  </svg>`;
+  return L.divIcon({ html: svg, iconSize: [s*2, s*2], iconAnchor: [s, s], className: '' });
+}
+
+function drawVessel(v) {
+  const lyr = layers[v.id] || {};
+  const visCnt = Math.round(sliderVal / 100 * 40);
+  const pts = v.track.slice(Math.max(0, v.track.length - visCnt - 1));
+
+  // Track lines
+  if (lyr.track) lyr.track.forEach(l => map.removeLayer(l));
+  lyr.track = [];
+  for (let i = 1; i < pts.length; i++) {
+    const a = pts[i - 1], b = pts[i];
+    lyr.track.push(L.polyline([[a.lat, a.lon], [b.lat, b.lon]], {
+      color: speedColor(b.spd),
+      weight: selectedId === v.id ? 3.5 : 2,
+      opacity: 0.15 + 0.85 * (i / pts.length)
+    }).addTo(map));
+  }
+
+  // Planned route
+  if (lyr.route) map.removeLayer(lyr.route);
+  if (lyr.routeDots) lyr.routeDots.forEach(m => map.removeLayer(m));
+  lyr.routeDots = [];
+  if (v.route && v.route.length > 1) {
+    lyr.route = L.polyline(v.route.map(p => [p.lat, p.lon]), {
+      color: '#7f77dd', weight: 1.8, opacity: 0.65, dashArray: '6,4'
+    }).addTo(map);
+    v.route.slice(1).forEach(wp => {
+      lyr.routeDots.push(L.circleMarker([wp.lat, wp.lon], {
+        radius: 3.5, color: '#7f77dd', fillColor: '#7f77dd', fillOpacity: 0.75, weight: 1
+      }).addTo(map));
+    });
+  }
+
+  // COG vector
+  if (lyr.cog) map.removeLayer(lyr.cog);
+  const cogRad = v.cog * Math.PI / 180;
+  const cogLen = v.sog > 1 ? 0.28 : 0.07;
+  lyr.cog = L.polyline(
+    [[v.lat, v.lon], [v.lat + Math.cos(cogRad) * cogLen, v.lon + Math.sin(cogRad) * cogLen]],
+    { color: '#ffdc32', weight: 2.2, opacity: 0.9 }
+  ).addTo(map);
+
+  // Vessel marker
+  if (lyr.marker) map.removeLayer(lyr.marker);
+  lyr.marker = L.marker([v.lat, v.lon], { icon: vesselIcon(v.color, v.heading, selectedId === v.id) })
+    .addTo(map)
+    .bindTooltip(
+      `<b>${v.flag} ${v.name}</b><br>` +
+      `SOG ${v.sog.toFixed(1)} kts &nbsp;·&nbsp; HDG ${Math.round(v.heading)}°<br>` +
+      `${v.status} → ${v.dest || '—'}`,
+      { direction: 'right', offset: [12, 0], opacity: 0.95 }
+    );
+  lyr.marker.on('click', () => selectVessel(v.id));
+  layers[v.id] = lyr;
+}
+
+function clearVesselLayer(id) {
+  const lyr = layers[id];
+  if (!lyr) return;
+  (lyr.track || []).forEach(l => map.removeLayer(l));
+  (lyr.routeDots || []).forEach(l => map.removeLayer(l));
+  ['route', 'cog', 'marker'].forEach(k => lyr[k] && map.removeLayer(lyr[k]));
+  delete layers[id];
+}
+
+function redrawAll() { vessels.forEach(drawVessel); }
+
+// ─────────────────────────────────────────────
+//  Sidebar
+// ─────────────────────────────────────────────
+function renderSidebar() {
+  const el = document.getElementById('vessel-list');
+  el.innerHTML = '';
+  vessels.forEach(v => {
+    const sc = statusClass(v.status);
+    const div = document.createElement('div');
+    div.className = 'vessel-item' + (selectedId === v.id ? ' active' : '');
+    div.innerHTML = `
+      <div class="v-name">
+        <span class="vessel-dot" style="background:${v.color}"></span>
+        ${v.flag}&nbsp;${v.name}
+      </div>
+      <div class="v-meta">${v.mmsi} &nbsp;·&nbsp; ${v.flagCode} &nbsp;·&nbsp; Built ${v.built}</div>
+      <div class="v-stats">
+        <span>SOG <b>${v.sog.toFixed(1)} kts</b></span>
+        <span>HDG <b>${Math.round(v.heading)}°</b></span>
+        <span>Draft <b>${v.draft}m</b></span>
+      </div>
+      <span class="v-status ${sc}">${v.status}</span>
+      <div class="v-blurb">${v.blurb}</div>`;
+    div.onclick = () => selectVessel(v.id);
+    el.appendChild(div);
+  });
+  document.getElementById('vessel-count').textContent =
+    vessels.length + ' vessel' + (vessels.length !== 1 ? 's' : '') + ' tracked';
+}
+
+// ─────────────────────────────────────────────
+//  Info panel
+// ─────────────────────────────────────────────
+function updateInfoPanel() {
+  const v = vessels.find(x => x.id === selectedId);
+  if (!v) {
+    document.getElementById('ip-name').textContent = 'Select a vessel';
+    document.getElementById('ip-body').innerHTML =
+      '<span style="color:#4a7fa5">Click a vessel on the map or in the sidebar to view its AIS data.</span>';
+    return;
+  }
+  document.getElementById('ip-name').innerHTML = `${v.flag}&nbsp;${v.name}`;
+  const rows = (pairs) => pairs.map(([l, r]) =>
+    `<div class="i-row"><span class="i-label">${l}</span><span class="i-val">${r}</span></div>`
+  ).join('');
+  document.getElementById('ip-body').innerHTML =
+    rows([['IMO', v.imo], ['MMSI', v.mmsi], ['Call sign', v.callsign], ['Type', cap(v.type)], ['Built', v.built], ['Dimensions', `${v.length}×${v.beam}m`], ['Gross tonnage', v.gt.toLocaleString()]]) +
+    '<div class="i-sep"></div>' +
+    rows([['SOG', v.sog.toFixed(1) + ' kts'], ['COG', Math.round(v.cog) + '°'], ['Heading', Math.round(v.heading) + '°'], ['Draft', v.draft + ' m'], ['Nav status', v.status]]) +
+    '<div class="i-sep"></div>' +
+    rows([['Destination', v.dest || '—'], ['ETA', v.eta || '—'], ['Last port', v.lastPort || '—']]) +
+    `<div style="font-size:10px;color:#2a5a8c;margin-top:5px;">${v.lat.toFixed(4)}°N &nbsp;${Math.abs(v.lon).toFixed(4)}°${v.lon < 0 ? 'W' : 'E'}</div>`;
+}
+
+// ─────────────────────────────────────────────
+//  Selection
+// ─────────────────────────────────────────────
+function selectVessel(id) {
+  selectedId = id;
+  renderSidebar();
+  updateInfoPanel();
+  redrawAll();
+  const v = vessels.find(x => x.id === id);
+  if (v) map.flyTo([v.lat, v.lon], Math.max(map.getZoom(), 7), { duration: 1.2 });
+}
+
+// ─────────────────────────────────────────────
+//  Timeline
+// ─────────────────────────────────────────────
+function onSlider(val) {
+  sliderVal = parseInt(val);
+  const mins = Math.round((100 - sliderVal) * 24);
+  document.getElementById('time-display').textContent =
+    sliderVal === 100 ? 'Now (live)' : mins + ' min ago';
+  redrawAll();
+}
+
+function togglePlay() {
+  isPlaying = !isPlaying;
+  document.getElementById('play-btn').textContent = isPlaying ? '⏸ Pause' : '▶ Play';
+  if (isPlaying) {
+    const slider = document.getElementById('timeline-slider');
+    slider.value = 0; sliderVal = 0;
+    playTimer = setInterval(() => {
+      const sp = parseInt(document.getElementById('speed-select').value);
+      sliderVal = Math.min(100, sliderVal + sp);
+      slider.value = sliderVal;
+      onSlider(sliderVal);
+      if (sliderVal >= 100) {
+        isPlaying = false; clearInterval(playTimer);
+        document.getElementById('play-btn').textContent = '▶ Play';
+      }
+    }, 120);
+  } else clearInterval(playTimer);
+}
+
+// ─────────────────────────────────────────────
+//  Live simulation (replace with real AIS feed)
+// ─────────────────────────────────────────────
+setInterval(() => {
+  vessels.forEach(v => {
+    if (v.sog < 0.8) return;
+    const rad = v.heading * Math.PI / 180;
+    v.lat += Math.cos(rad) * v.sog * 0.000055;
+    v.lon += Math.sin(rad) * v.sog * 0.000075;
+    v.heading += (Math.random() - 0.5) * 1.2;
+    v.cog = v.heading + (Math.random() - 0.5) * 2;
+    v.sog = Math.max(0.3, Math.min(25, v.sog + (Math.random() - 0.5) * 0.25));
+    v.track.push({ lat: v.lat, lon: v.lon, spd: v.sog, hdg: v.heading, ts: Date.now() });
+    if (v.track.length > 100) v.track.shift();
+    if (v.route.length > 0) v.route[0] = { lat: v.lat, lon: v.lon };
+    v.blurb = blurb(v);
+  });
+  if (sliderVal === 100) { renderSidebar(); updateInfoPanel(); redrawAll(); }
+}, 2000);
+
+// ─────────────────────────────────────────────
+//  Search modal
+// ─────────────────────────────────────────────
+function openModal() {
+  document.getElementById('modal-overlay').classList.add('show');
+  const inp = document.getElementById('search-input');
+  inp.value = '';
+  document.getElementById('modal-status').textContent = 'Start typing to search vessels';
+  document.getElementById('modal-results').innerHTML = '<div class="r-empty">Results will appear here</div>';
+  searchPick = null;
+  setAddBtn(false);
+  setTimeout(() => inp.focus(), 80);
+}
+function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+function setAddBtn(on) {
+  const b = document.getElementById('btn-add-confirm');
+  b.disabled = !on; b.style.opacity = on ? '1' : '0.4';
+}
+
+function onSearch(val) {
+  clearTimeout(searchTimer);
+  searchPick = null; setAddBtn(false);
+  if (!val.trim()) {
+    document.getElementById('modal-status').textContent = 'Start typing to search vessels';
+    document.getElementById('modal-results').innerHTML = '<div class="r-empty">Results will appear here</div>';
+    return;
+  }
+  document.getElementById('modal-status').textContent = 'Searching…';
+  searchTimer = setTimeout(() => {
+    const q = val.toLowerCase();
+    const results = VESSEL_DB.filter(v =>
+      v.name.toLowerCase().includes(q) ||
+      v.mmsi.includes(q) ||
+      (v.imo && v.imo.includes(q)) ||
+      v.type.toLowerCase().includes(q) ||
+      v.flagCode.toLowerCase().includes(q)
+    ).slice(0, 10);
+
+    const tracked = vessels.map(v => v.mmsi);
+    document.getElementById('modal-status').textContent =
+      results.length ? `${results.length} vessel${results.length !== 1 ? 's' : ''} found` : 'No vessels found';
+
+    if (!results.length) {
+      document.getElementById('modal-results').innerHTML = '<div class="r-empty">No matches — try a different name, MMSI or type</div>';
+      return;
+    }
+    document.getElementById('modal-results').innerHTML = results.map((v, i) => {
+      const t = tracked.includes(v.mmsi);
+      return `<div class="r-item${t ? ' selected' : ''}" id="ri${i}" onclick="${t ? '' : `pickResult(${i})`}">
+        <div class="r-name">${v.flag} ${v.name} ${t ? '<span style="color:#5dcaa5;font-size:10px;font-weight:400;">✓ already tracking</span>' : ''}</div>
+        <div class="r-meta">IMO ${v.imo} · MMSI ${v.mmsi} · ${cap(v.type)} · ${v.flagCode}</div>
+        <div class="r-meta">${v.sog.toFixed(1)} kts · ${v.status} → ${v.dest || '—'}</div>
+      </div>`;
+    }).join('');
+    window.__results = results;
+  }, 280);
+}
+
+function pickResult(i) {
+  document.querySelectorAll('.r-item').forEach(el => el.classList.remove('selected'));
+  const el = document.getElementById('ri' + i);
+  if (el) el.classList.add('selected');
+  searchPick = window.__results[i];
+  setAddBtn(true);
+}
+
+function confirmAdd() {
+  if (!searchPick) return;
+  const existing = vessels.find(v => v.mmsi === searchPick.mmsi);
+  if (existing) { closeModal(); selectVessel(existing.id); return; }
+  const v = Object.assign({}, searchPick);
+  v.id = nextId++;
+  v.color = COLORS[v.id % COLORS.length];
+  v.blurb = blurb(v);
+  if (!v.track) {
+    v.track = genTrack(v.lat, v.lon, v.heading, v.sog, 40);
+    v.track.push({ lat: v.lat, lon: v.lon, spd: v.sog, hdg: v.heading, ts: Date.now() });
+    v.route = genRoute(v.lat, v.lon, v.heading, v.sog, 5);
+  }
+  vessels.push(v);
+  selectedId = v.id;
+  closeModal();
+  renderSidebar();
+  updateInfoPanel();
+  drawVessel(v);
+  map.flyTo([v.lat, v.lon], 6, { duration: 1.5 });
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// ─────────────────────────────────────────────
+//  Boot
+// ─────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  initMap();
+  redrawAll();
+  renderSidebar();
+  updateInfoPanel();
+  setTimeout(() => {
+    const bounds = L.latLngBounds(vessels.map(v => [v.lat, v.lon]));
+    map.fitBounds(bounds.pad(0.5));
+  }, 300);
+});
+</script>
+</body>
+</html>
