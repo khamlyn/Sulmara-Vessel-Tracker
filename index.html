@@ -10,37 +10,56 @@
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0d1b2e;color:#e0e8f0;height:100vh;display:flex;flex-direction:column;overflow:hidden;}
 
-    /* Header */
-    #hdr{background:#071428;border-bottom:1px solid #1e3a5f;padding:0 16px;height:46px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;z-index:10;}
+    #hdr{background:#071428;border-bottom:1px solid #1e3a5f;padding:0 16px;height:46px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
     #hdr h1{font-size:15px;font-weight:600;color:#e0e8f0;letter-spacing:.3px;display:flex;align-items:center;gap:9px;}
-    .live-badge{background:#0f6e56;color:#9fe1cb;font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;display:flex;align-items:center;gap:5px;}
-    .live-dot{width:6px;height:6px;background:#5dcaa5;border-radius:50%;animation:blink 1.4s infinite;}
+    .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:10px;display:flex;align-items:center;gap:5px;}
+    .badge-live{background:#0f6e56;color:#9fe1cb;}
+    .badge-key{background:#2a1f0a;color:#f0c060;cursor:pointer;}
+    .badge-err{background:#2a1010;color:#e08080;}
+    .badge-conn{background:#0a2040;color:#7ab8e0;}
+    .ldot{width:6px;height:6px;background:#5dcaa5;border-radius:50%;animation:blink 1.4s infinite;}
     @keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-    /* Body */
     #body{display:flex;flex:1;overflow:hidden;min-height:0;}
 
-    /* Sidebar */
     #sb{width:265px;flex-shrink:0;background:#0d1b2e;border-right:1px solid #1e3a5f;display:flex;flex-direction:column;overflow:hidden;}
     #sb-hdr{padding:9px 13px;border-bottom:1px solid #1e3a5f;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
     #sb-hdr span{font-size:11px;font-weight:600;color:#4a7fa5;text-transform:uppercase;letter-spacing:.8px;}
-    .sb-btn{background:#1a3a5c;color:#7ab8e0;border:1px solid #2a5a8c;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;}
-    .sb-btn:hover{background:#234d78;}
+    .sbbtn{background:#1a3a5c;color:#7ab8e0;border:1px solid #2a5a8c;border-radius:5px;padding:4px 10px;font-size:11px;cursor:pointer;}
+    .sbbtn:hover{background:#234d78;}
     #vlist{flex:1;overflow-y:auto;}
     #vlist::-webkit-scrollbar{width:4px;}
     #vlist::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:2px;}
-    .vi{padding:10px 13px;border-bottom:1px solid #112030;cursor:pointer;position:relative;user-select:none;}
+
+    .vi{padding:10px 13px;border-bottom:1px solid #112030;cursor:pointer;user-select:none;}
     .vi:hover{background:#112033;}
     .vi.active{background:#0d2640;border-left:3px solid #378add;padding-left:10px;}
     .vn{font-size:13px;font-weight:600;color:#d0e4f4;display:flex;align-items:center;gap:7px;margin-bottom:2px;}
     .vdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     .vm{font-size:10px;color:#4a7fa5;margin-top:1px;}
-    .vs{font-size:11px;color:#7ab8e0;margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;}
-    .vs b{color:#a8d4f0;}
+    .vstats{font-size:11px;color:#7ab8e0;margin-top:3px;display:flex;gap:10px;flex-wrap:wrap;}
+    .vstats b{color:#a8d4f0;}
     .vstatus{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:8px;margin-top:4px;}
-    .su{background:#0d3020;color:#5dcaa5;} .sa{background:#2a1f0a;color:#f0c060;} .sm{background:#0a2020;color:#5db8b8;} .sr{background:#2a1010;color:#e08080;}
-    .vb{font-size:11px;color:#6b9ac4;line-height:1.55;margin-top:6px;padding-top:6px;border-top:1px solid #132236;}
-    .vb em{color:#4a8fa5;font-style:normal;}
+    .su{background:#0d3020;color:#5dcaa5;} .sa{background:#2a1f0a;color:#f0c060;}
+    .sm{background:#0a2020;color:#5db8b8;} .sr{background:#2a1010;color:#e08080;}
+    .vblurb{font-size:11px;color:#6b9ac4;line-height:1.55;margin-top:6px;padding-top:6px;border-top:1px solid #132236;}
+    .vais-age{font-size:10px;color:#3a6f95;margin-top:3px;}
+    .vais-stale{color:#ba7517!important;}
+
+    /* API key setup panel */
+    #api-banner{background:#0a1830;border-bottom:2px solid #ba7517;padding:10px 16px;flex-shrink:0;display:none;}
+    #api-banner.show{display:flex;align-items:flex-start;gap:12px;}
+    .ab-icon{color:#ba7517;font-size:20px;flex-shrink:0;margin-top:2px;}
+    .ab-body{flex:1;}
+    .ab-title{font-size:13px;font-weight:600;color:#f0c060;margin-bottom:4px;}
+    .ab-text{font-size:11px;color:#7ab8e0;line-height:1.55;margin-bottom:8px;}
+    .ab-row{display:flex;gap:8px;align-items:center;}
+    .ab-row input{flex:1;padding:7px 10px;font-size:12px;border:1px solid #1e3a5f;border-radius:5px;background:#071428;color:#d0e4f4;outline:none;font-family:monospace;}
+    .ab-row input:focus{border-color:#378add;}
+    .ab-btn{background:#185fa5;color:#fff;border:none;border-radius:5px;padding:7px 14px;font-size:12px;cursor:pointer;white-space:nowrap;}
+    .ab-btn:hover{background:#1d76cc;}
+    .ab-skip{color:#4a7fa5;font-size:11px;cursor:pointer;padding:7px 8px;white-space:nowrap;}
+    .ab-skip:hover{color:#7ab8e0;}
 
     /* Context menu */
     #ctx{display:none;position:fixed;z-index:9000;background:#0d1b2e;border:1px solid #1e3a5f;border-radius:7px;padding:4px 0;min-width:180px;box-shadow:0 4px 20px rgba(0,0,0,.7);}
@@ -50,10 +69,10 @@
     .cxsep{border-top:1px solid #1e3a5f;margin:3px 0;}
     .cxd{color:#e08080;}
 
-    /* Map */
     #ma{flex:1;position:relative;overflow:hidden;min-width:0;}
     #map{width:100%;height:100%;}
     #map.bza{cursor:crosshair!important;}
+    #map.mza{cursor:crosshair!important;}
 
     /* Toolbar */
     #tb{position:absolute;top:12px;left:12px;z-index:600;display:flex;flex-direction:column;gap:3px;}
@@ -61,6 +80,7 @@
     .tbb{width:34px;height:34px;background:rgba(7,20,40,.92);border:1px solid #1e3a5f;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#7ab8e0;transition:background .12s,border-color .12s;}
     .tbb:hover{background:rgba(26,58,92,.95);border-color:#378add;color:#a8d4f0;}
     .tbb.active{background:#1a3a5c;border-color:#378add;color:#5dcaa5;}
+    .tbb.off{background:#2a1010;border-color:#e08080;color:#e08080;}
     .tbsep{height:5px;}
     .tbt{display:none;position:absolute;left:42px;top:50%;transform:translateY(-50%);background:rgba(7,20,40,.96);border:1px solid #1e3a5f;border-radius:5px;padding:4px 9px;font-size:11px;color:#a8d4f0;white-space:nowrap;pointer-events:none;z-index:700;}
     .tbw:hover .tbt{display:block;}
@@ -68,44 +88,35 @@
     #vzd.show{display:block;}
     .vzi{padding:7px 13px;font-size:12px;color:#a8d4f0;cursor:pointer;display:flex;align-items:center;gap:8px;}
     .vzi:hover{background:#1a3a5c;}
-    .vzidot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-    /* COG toggle in toolbar — same as tbb */
-    #btn-cog.active{background:#2a1010;border-color:#e08080;color:#e08080;}
-
-    /* Info panel */
     #ip{position:absolute;top:12px;right:12px;width:215px;background:rgba(7,20,40,.93);border:1px solid #1e3a5f;border-radius:8px;padding:12px;font-size:11px;z-index:500;}
     #ipn{font-size:13px;font-weight:600;color:#d0e4f4;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #1e3a5f;}
     .ir{display:flex;justify-content:space-between;margin-bottom:4px;}
     .il{color:#4a7fa5;} .iv{font-weight:500;color:#a8d4f0;text-align:right;max-width:125px;font-size:11px;}
     .isep{border-top:1px solid #1e3a5f;margin:6px 0;}
 
-    /* Legend */
     #leg{position:absolute;bottom:34px;right:12px;background:rgba(7,20,40,.9);border:1px solid #1e3a5f;border-radius:7px;padding:8px 11px;font-size:10px;z-index:500;}
     .lt{font-weight:600;color:#7ab8e0;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
     .lr{display:flex;align-items:center;gap:7px;margin-bottom:3px;color:#4a7fa5;}
     .ll{width:20px;height:3px;border-radius:2px;}
 
-    /* Measure tooltip */
-    .measure-tip{background:rgba(7,20,40,.95)!important;border:1px solid #ffdc32!important;color:#ffdc32!important;font-size:12px!important;border-radius:5px!important;padding:5px 9px!important;font-weight:600!important;}
+    .mtip{background:rgba(7,20,40,.95)!important;border:1px solid #ffdc32!important;color:#ffdc32!important;font-size:12px!important;border-radius:5px!important;padding:5px 9px!important;font-weight:600!important;}
 
-    /* Timeline */
     #tl{height:44px;background:#071428;border-top:1px solid #1e3a5f;padding:0 14px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
     #tl label{font-size:11px;color:#4a7fa5;white-space:nowrap;}
     #tlsl{flex:1;min-width:0;accent-color:#378add;}
     #tltxt{font-size:11px;font-weight:500;color:#7ab8e0;min-width:95px;}
-    #playbtn{background:#1a3a5c;color:#7ab8e0;border:1px solid #2a5a8c;border-radius:5px;padding:5px 12px;font-size:11px;cursor:pointer;}
-    #playbtn:hover{background:#234d78;}
+    #pbtn{background:#1a3a5c;color:#7ab8e0;border:1px solid #2a5a8c;border-radius:5px;padding:5px 12px;font-size:11px;cursor:pointer;}
+    #pbtn:hover{background:#234d78;}
     #spsel{font-size:11px;padding:3px 5px;border-radius:4px;border:1px solid #1e3a5f;background:#0d1b2e;color:#7ab8e0;}
 
     /* Modal */
     #mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;align-items:center;justify-content:center;}
     #mo.show{display:flex;}
-    .mbox{background:#0d1b2e;border:1px solid #1e3a5f;border-radius:10px;padding:20px;width:380px;max-height:560px;display:flex;flex-direction:column;}
+    .mbox{background:#0d1b2e;border:1px solid #1e3a5f;border-radius:10px;padding:20px;width:390px;max-height:580px;display:flex;flex-direction:column;}
     .mbox h3{font-size:15px;font-weight:600;color:#d0e4f4;margin-bottom:4px;}
-    .mhint{font-size:11px;color:#4a7fa5;margin-bottom:11px;line-height:1.5;}
-    .mhint a{color:#378add;}
-    .mhint b{color:#7ab8e0;font-weight:500;}
+    .mhint{font-size:11px;color:#4a7fa5;margin-bottom:11px;line-height:1.55;}
+    .mhint a{color:#378add;} .mhint b{color:#7ab8e0;font-weight:500;}
     .mbox input{width:100%;padding:9px 12px;font-size:13px;border:1px solid #1e3a5f;border-radius:6px;background:#071428;color:#d0e4f4;outline:none;}
     .mbox input:focus{border-color:#378add;}
     #mst{font-size:11px;color:#4a7fa5;margin:8px 0 5px;min-height:16px;}
@@ -119,7 +130,7 @@
     .rn{font-size:13px;font-weight:600;color:#d0e4f4;}
     .rm{font-size:11px;color:#4a7fa5;margin-top:2px;}
     .rp{font-size:11px;color:#3a6f95;margin-top:2px;}
-    .re{padding:20px;text-align:center;color:#4a7fa5;font-size:12px;line-height:1.6;}
+    .re{padding:20px;text-align:center;color:#4a7fa5;font-size:12px;line-height:1.7;}
     .mac{display:flex;gap:9px;margin-top:13px;}
     .mac button{flex:1;padding:8px;border-radius:6px;font-size:12px;cursor:pointer;font-weight:500;}
     .bcn{background:transparent;border:1px solid #1e3a5f;color:#7ab8e0;}
@@ -128,7 +139,10 @@
     .bad:hover:not(:disabled){background:#1d76cc;}
     .bad:disabled{opacity:.4;cursor:default;}
 
-    /* Leaflet */
+    /* Signal icon */
+    .sig-wrap{display:inline-flex;align-items:center;gap:5px;margin-top:3px;}
+    .sig-label{font-size:10px;}
+    .sig-green{color:#5dcaa5!important;} .sig-orange{color:#e0a020!important;} .sig-red{color:#e08080!important;} .sig-grey{color:#4a7fa5!important;}
     .leaflet-control-attribution{font-size:9px!important;opacity:.5;background:rgba(0,0,0,.5)!important;color:#aaa!important;}
     .leaflet-control-attribution a{color:#7ab8e0!important;}
     .leaflet-control-zoom{display:none!important;}
@@ -147,15 +161,42 @@
     </svg>
     Sulmara Vessel Tracker
   </h1>
-  <div style="display:flex;align-items:center;gap:12px;">
+  <div style="display:flex;align-items:center;gap:10px;">
     <span id="vcnt" style="font-size:12px;color:#6b9ac4;"></span>
-    <div class="live-badge"><div class="live-dot"></div>LIVE AIS</div>
+    <div id="conn-badge" style="display:flex;align-items:center;gap:8px;">
+      <span id="conn-label" style="font-size:11px;color:#6b9ac4;">Connecting…</span>
+      <svg id="conn-signal" width="22" height="16" viewBox="0 0 22 16" fill="none">
+        <path id="sig-arc-4" d="M1 13 Q11 1 21 13" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path id="sig-arc-3" d="M3.5 13 Q11 4 18.5 13" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path id="sig-arc-2" d="M6 13 Q11 7 16 13" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path id="sig-arc-1" d="M8.5 13 Q11 10 13.5 13" stroke="#1e3a5f" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <circle id="sig-dot" cx="11" cy="14.5" r="1.5" fill="#1e3a5f"/>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- API key setup banner -->
+<div id="api-banner">
+  <div class="ab-icon">⚠</div>
+  <div class="ab-body">
+    <div class="ab-title">Live AIS API key required for real vessel positions</div>
+    <div class="ab-text">
+      This tool uses <strong>aisstream.io</strong> — a free WebSocket AIS feed — for real-time vessel positions.<br>
+      <strong>Get your free key:</strong> Go to <a href="https://aisstream.io" target="_blank" style="color:#378add;">aisstream.io</a> → Sign up (free) → Copy your API key → Paste below.<br>
+      Your key is saved in your browser (localStorage) and never sent anywhere except directly to aisstream.io.
+    </div>
+    <div class="ab-row">
+      <input id="key-input" type="text" placeholder="Paste your aisstream.io API key here…" autocomplete="off" spellcheck="false"/>
+      <button class="ab-btn" onclick="saveKey()">Connect</button>
+      <span class="ab-skip" onclick="dismissBanner()">Use demo mode ▸</span>
+    </div>
   </div>
 </div>
 
 <div id="body">
   <div id="sb">
-    <div id="sb-hdr"><span>Fleet</span><button class="sb-btn" onclick="openModal()">+ Add vessel</button></div>
+    <div id="sb-hdr"><span>Fleet</span><button class="sbbtn" onclick="openModal()">+ Add vessel</button></div>
     <div id="vlist"></div>
   </div>
   <div id="ma">
@@ -169,29 +210,26 @@
       <div class="tbw"><div class="tbb" onclick="map.zoomIn()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tbt">Zoom in</span></div>
       <div class="tbw"><div class="tbb" onclick="map.zoomOut()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span class="tbt">Zoom out</span></div>
       <div class="tbsep"></div>
-      <div class="tbw"><div class="tbb" id="btn-bz" onclick="toggleBZ()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/><path d="M8 12l3 3 5-5"/></svg></div><span class="tbt">Box zoom (draw area)</span></div>
-      <div class="tbw"><div class="tbb" id="btn-measure" onclick="toggleMeasure()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/><line x1="7" y1="9" x2="7" y2="15"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="17" y1="9" x2="17" y2="15"/></svg></div><span class="tbt">Measure distance</span></div>
+      <div class="tbw"><div class="tbb" id="btn-bz" onclick="toggleBZ()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="4 2"/><path d="M8 12l3 3 5-5"/></svg></div><span class="tbt">Box zoom</span></div>
+      <div class="tbw"><div class="tbb" id="btn-ms" onclick="toggleMeasure()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3"/><line x1="7" y1="9" x2="7" y2="15"/><line x1="12" y1="9" x2="12" y2="15"/><line x1="17" y1="9" x2="17" y2="15"/></svg></div><span class="tbt">Measure distance (m)</span></div>
       <div class="tbsep"></div>
       <div class="tbw" id="vz-wrap"><div class="tbb" id="btn-vz" onclick="toggleVZMenu()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg></div><span class="tbt">Zoom to vessel</span><div id="vzd"></div></div>
       <div class="tbsep"></div>
-      <div class="tbw"><div class="tbb" id="btn-cog" onclick="toggleCOG()" title="Toggle COG arrows"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div><span class="tbt">Toggle COG arrows</span></div>
+      <div class="tbw"><div class="tbb" id="btn-cog" onclick="toggleCOG()"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></div><span class="tbt">Toggle COG arrows</span></div>
     </div>
 
-    <!-- Info panel -->
     <div id="ip"><div id="ipn">Select a vessel</div><div id="ipb" style="color:#4a7fa5;font-size:11px;">Click a vessel on the map or in the sidebar.</div></div>
 
-    <!-- Legend -->
     <div id="leg">
       <div class="lt">Track speed</div>
-      <div class="lr"><div class="ll" style="background:#1d9e75"></div>&gt; 15 kts</div>
+      <div class="lr"><div class="ll" style="background:#1d9e75"></div>&gt;15 kts</div>
       <div class="lr"><div class="ll" style="background:#378add"></div>8–15 kts</div>
-      <div class="lr"><div class="ll" style="background:#ba7517"></div>&lt; 8 kts</div>
+      <div class="lr"><div class="ll" style="background:#ba7517"></div>&lt;8 kts</div>
       <div class="lr"><div class="ll" style="background:transparent;border-top:2px dashed #7f77dd;height:0"></div>Planned</div>
       <div class="lr" style="margin-top:5px;border-top:1px solid #1e3a5f;padding-top:5px;"><div style="width:20px;height:2px;background:#ffdc32;"></div>COG</div>
     </div>
 
-    <!-- Context menu -->
-    <div id="ctx" style="position:fixed;display:none;z-index:9000;background:#0d1b2e;border:1px solid #1e3a5f;border-radius:7px;padding:4px 0;min-width:180px;box-shadow:0 4px 20px rgba(0,0,0,.7);">
+    <div id="ctx">
       <div class="cxi" onclick="ctxZoom()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>Zoom to vessel</div>
       <div class="cxi" onclick="ctxFit()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>Fit all vessels</div>
       <div class="cxsep"></div>
@@ -205,9 +243,10 @@
       <div class="mbox">
         <h3>Search &amp; add vessel</h3>
         <p class="mhint">
-          Search by name, MMSI, IMO, call sign, fleet, vessel type or area.<br>
-          Try: <b>Ocean Marlin · Orient Explorer · Go Adventurer · Normand · Skandi · VOS · Bourbon · Harvey · Esvagt · Fugro · WAM-V · AUV · PSV · AHTS · survey · North Sea · Med</b><br>
-          <em style="color:#2a5a8c;">Live AIS lookups require a paid API (MarineTraffic / aisstream.io). Vessels below come from the built-in database.</em>
+          Search by name, MMSI, IMO, call sign, type or area.<br>
+          <b>With a live AIS key:</b> vessels get real positions on connect.<br>
+          <b>Without a key:</b> approximate last-known positions are used.<br>
+          Try: <b>Ocean Marlin · VOS · Ross Eagle · Orient Explorer · Go Adventurer · Normand · Skandi · WAM-V · AUV · AHTS · PSV · survey</b>
         </p>
         <input id="si" placeholder="Type name, MMSI, fleet or vessel type…" oninput="onSrch(this.value)" autocomplete="off" spellcheck="false"/>
         <div id="mst">Start typing to search</div>
@@ -222,7 +261,7 @@
 </div>
 
 <div id="tl">
-  <button id="playbtn" onclick="togglePlay()">▶ Play</button>
+  <button id="pbtn" onclick="togglePlay()">▶ Play</button>
   <label>Track history:</label>
   <input type="range" id="tlsl" min="0" max="100" value="100" step="1" oninput="onSl(this.value)"/>
   <span id="tltxt">Now (live)</span>
@@ -231,116 +270,283 @@
 </div>
 
 <script>
-// ─── Helpers ───────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────
+//  CONFIGURATION
+//  Replace the empty string with your aisstream.io API key, OR
+//  leave it empty and enter it via the banner when the page loads.
+//  Get a free key at: https://aisstream.io
+// ─────────────────────────────────────────────────────────────────────
+const HARDCODED_API_KEY = 'b7b1326d4531fc352412f6ba0bc8aa3287c1b194';
+
 const COLORS=['#378add','#1d9e75','#d85a30','#7f77dd','#e0a020','#d4537e','#5dcaa5','#f09595','#60c0e0','#a0d870'];
+
+// ─────────────────────────────────────────────────────────────────────
+//  VESSEL REGISTRY
+//  These are the vessels the tracker knows about.
+//  - mmsi      : used to subscribe to live AIS via aisstream.io
+//  - lat/lon   : FALLBACK position only — overwritten immediately by live AIS
+//  - All other fields are static vessel particulars (don't change often)
+// ─────────────────────────────────────────────────────────────────────
+const REGISTRY = [
+  // ── Your primary fleet ──
+  { name:'Ocean Marlin',      mmsi:'257768000', imo:'9669213', cs:'LAWV8',   type:'Offshore supply vessel',      flag:'🇳🇴', fc:'NO', dest:'ROV OPS',         built:2014, len:66.8, bm:16.0, gt:2298,  draft:5.5, lat:35.98, lon:14.02, area:'Central Mediterranean' },
+  { name:'VOS Gorgeous',      mmsi:'235103024', imo:'9680530', cs:'2HEN8',   type:'Standby safety vessel',       flag:'🇬🇧', fc:'GB', dest:'SURVEY OPS',      built:2015, len:60.0, bm:15.0, gt:1969,  draft:6.0, lat:56.45, lon:3.85,  area:'North Sea' },
+  { name:'Ross Eagle',        mmsi:'258156000', imo:'9249465', cs:'JXYX',    type:'Offshore supply vessel',      flag:'🇳🇴', fc:'NO', dest:'MAAS ENTRANCE',   built:2003, len:72.0, bm:16.0, gt:2244,  draft:4.5, lat:51.98, lon:4.18,  area:'North Sea' },
+  { name:'Orient Explorer',   mmsi:'416255500', imo:'9625114', cs:'BR4703',  type:'Offshore supply vessel',      flag:'🇹🇼', fc:'TW', dest:'TAICHUNG',        built:2012, len:60.0, bm:16.0, gt:1500,  draft:4.5, lat:24.14, lon:120.68,area:'Taiwan Strait' },
+  { name:'Go Adventurer',     mmsi:'368237180', imo:'9643087', cs:'WDM7780', type:'Offshore supply vessel',      flag:'🇺🇸', fc:'US', dest:'PORT FOURCHON',   built:2011, len:56.4, bm:14.0, gt:970,   draft:3.8, lat:27.45, lon:-80.35,area:'Florida, USA' },
+  // ── Sulmara USVs (no IMO — tracked via relay; use placeholder MMSI) ──
+  { name:'Sulmara WAM-V 01',  mmsi:'235999001', imo:'N/A',    cs:'SWAM1',   type:'Uncrewed surface vehicle',    flag:'🇬🇧', fc:'GB', dest:'SURVEY OPS',      built:2022, len:4.0,  bm:3.0,  gt:0,     draft:0.3, lat:57.20, lon:0.50,  area:'North Sea' },
+  { name:'Sulmara WAM-V 02',  mmsi:'235999002', imo:'N/A',    cs:'SWAM2',   type:'Uncrewed surface vehicle',    flag:'🇬🇧', fc:'GB', dest:'SURVEY OPS',      built:2022, len:4.0,  bm:3.0,  gt:0,     draft:0.3, lat:57.18, lon:0.52,  area:'North Sea' },
+  { name:'Sulmara WAM-V 03',  mmsi:'235999003', imo:'N/A',    cs:'SWAM3',   type:'Uncrewed surface vehicle',    flag:'🇬🇧', fc:'GB', dest:'SURVEY OPS',      built:2023, len:4.0,  bm:3.0,  gt:0,     draft:0.3, lat:57.22, lon:0.48,  area:'North Sea' },
+  // ── Anduril AUVs (subsea — tracked via topside relay) ──
+  { name:'Anduril Dive-LD #1',mmsi:'000000001', imo:'N/A',    cs:'AUV01',   type:'Autonomous underwater vehicle',flag:'🇺🇸',fc:'US', dest:'SUBSEA OPS',      built:2023, len:6.5,  bm:0.6,  gt:0,     draft:1.2, lat:28.10, lon:-90.50,area:'Gulf of Mexico' },
+  { name:'Anduril Dive-LD #2',mmsi:'000000002', imo:'N/A',    cs:'AUV02',   type:'Autonomous underwater vehicle',flag:'🇺🇸',fc:'US', dest:'SUBSEA OPS',      built:2023, len:6.5,  bm:0.6,  gt:0,     draft:1.2, lat:28.08, lon:-90.52,area:'Gulf of Mexico' },
+  // ── Additional searchable vessels ──
+  { name:'Normand Flower',    mmsi:'258337000', imo:'9606091', cs:'LAXS',    type:'Platform supply vessel',      flag:'🇳🇴', fc:'NO', dest:'BERGEN',          built:2013, len:93.0, bm:20.0, gt:4422,  draft:5.8, lat:60.20, lon:3.50,  area:'North Sea' },
+  { name:'Normand Installer', mmsi:'257665000', imo:'9258002', cs:'LAWP7',   type:'Construction vessel',         flag:'🇳🇴', fc:'NO', dest:'STAVANGER',       built:2002, len:157.0,bm:27.0, gt:16151, draft:7.2, lat:58.50, lon:2.00,  area:'North Sea' },
+  { name:'Normand Mariner',   mmsi:'257580000', imo:'9323086', cs:'LAJY6',   type:'AHTS',                        flag:'🇳🇴', fc:'NO', dest:'MONGSTAD',        built:2006, len:93.0, bm:22.0, gt:4649,  draft:6.5, lat:61.00, lon:4.20,  area:'Norwegian Sea' },
+  { name:'Normand Vision',    mmsi:'257668000', imo:'9358003', cs:'LAWY3',   type:'Subsea vessel',               flag:'🇳🇴', fc:'NO', dest:'ABERDEEN',        built:2007, len:155.0,bm:27.0, gt:15506, draft:7.8, lat:59.80, lon:0.50,  area:'North Sea' },
+  { name:'Skandi Arctic',     mmsi:'257716000', imo:'9535133', cs:'LAWA4',   type:'AHTS',                        flag:'🇳🇴', fc:'NO', dest:'HAMMERFEST',      built:2011, len:95.0, bm:24.0, gt:6166,  draft:7.0, lat:71.50, lon:23.00, area:'Barents Sea' },
+  { name:'Skandi Hav',        mmsi:'257450000', imo:'9244793', cs:'LARM6',   type:'AHTS',                        flag:'🇳🇴', fc:'NO', dest:'BERGEN',          built:2002, len:88.0, bm:20.0, gt:3898,  draft:6.0, lat:60.39, lon:5.32,  area:'Bergen' },
+  { name:'Skandi Neptune',    mmsi:'257740000', imo:'9481560', cs:'LAWZ4',   type:'Subsea vessel',               flag:'🇳🇴', fc:'NO', dest:'ABERDEEN',        built:2010, len:121.0,bm:23.0, gt:9102,  draft:8.0, lat:58.20, lon:1.00,  area:'North Sea' },
+  { name:'VOS Pathfinder',    mmsi:'235059270', imo:'9537025', cs:'2DRS7',   type:'Standby safety vessel',       flag:'🇬🇧', fc:'GB', dest:'ABERDEEN',        built:2011, len:60.0, bm:15.0, gt:1977,  draft:5.0, lat:57.80, lon:1.20,  area:'North Sea' },
+  { name:'VOS Sweet',         mmsi:'235102890', imo:'9680518', cs:'2HEN7',   type:'Standby safety vessel',       flag:'🇬🇧', fc:'GB', dest:'HULL',            built:2015, len:60.0, bm:15.0, gt:1969,  draft:5.8, lat:53.74, lon:-0.27, area:'Humber, UK' },
+  { name:'VOS Star',          mmsi:'235088610', imo:'9466791', cs:'2FCS6',   type:'Standby safety vessel',       flag:'🇬🇧', fc:'GB', dest:'GREAT YARMOUTH',  built:2010, len:60.0, bm:14.5, gt:1850,  draft:5.0, lat:53.10, lon:2.10,  area:'Southern North Sea' },
+  { name:'Esvagt Aurora',     mmsi:'220582000', imo:'9553685', cs:'OXKH2',   type:'Standby safety vessel',       flag:'🇩🇰', fc:'DK', dest:'ESBJERG',         built:2012, len:72.0, bm:16.0, gt:2730,  draft:4.8, lat:56.00, lon:5.50,  area:'North Sea' },
+  { name:'Esvagt Njord',      mmsi:'220511000', imo:'9231890', cs:'OUHA2',   type:'Standby safety vessel',       flag:'🇩🇰', fc:'DK', dest:'ESBJERG',         built:2001, len:65.0, bm:15.0, gt:1800,  draft:4.5, lat:55.46, lon:8.45,  area:'Esbjerg' },
+  { name:'Maersk Cutter',     mmsi:'219658000', imo:'9386532', cs:'OUUT2',   type:'AHTS',                        flag:'🇩🇰', fc:'DK', dest:'ESBJERG',         built:2008, len:93.0, bm:22.0, gt:4640,  draft:6.8, lat:57.44, lon:10.54, area:'Kattegat' },
+  { name:'Harvey Energy',     mmsi:'367508360', imo:'9587534', cs:'WDE4509', type:'AHTS',                        flag:'🇺🇸', fc:'US', dest:'PORT FOURCHON',   built:2013, len:94.0, bm:22.0, gt:6016,  draft:7.0, lat:28.50, lon:-90.00,area:'Gulf of Mexico' },
+  { name:'Go Explorer',       mmsi:'368230820', imo:'9469405', cs:'WDH2190', type:'Offshore supply vessel',      flag:'🇺🇸', fc:'US', dest:'PORT FOURCHON',   built:2007, len:56.0, bm:14.0, gt:900,   draft:3.1, lat:28.80, lon:-90.20,area:'Gulf of Mexico' },
+  { name:'Fugro Synergy',     mmsi:'246323000', imo:'9443869', cs:'PHSS',    type:'Survey vessel',               flag:'🇳🇱', fc:'NL', dest:'ROTTERDAM',       built:2009, len:75.0, bm:16.0, gt:3200,  draft:5.0, lat:54.00, lon:4.50,  area:'North Sea' },
+  { name:'Fugro Searcher',    mmsi:'246317000', imo:'9263007', cs:'PHSR',    type:'Survey vessel',               flag:'🇳🇱', fc:'NL', dest:'ABERDEEN',        built:2003, len:68.0, bm:14.0, gt:2400,  draft:4.8, lat:57.50, lon:1.80,  area:'North Sea' },
+  { name:'Olympic Zeus',      mmsi:'257883000', imo:'9484928', cs:'LBCY2',   type:'AHTS',                        flag:'🇳🇴', fc:'NO', dest:'KRISTIANSUND',    built:2011, len:95.0, bm:24.0, gt:6212,  draft:6.3, lat:64.50, lon:7.00,  area:'Norwegian Sea' },
+];
+
+// ─── Helpers ──────────────────────────────────────────────────
 function cap(s){return s?s[0].toUpperCase()+s.slice(1):'';}
 function spdCol(s){return s>15?'#1d9e75':s>=8?'#378add':'#ba7517';}
 function stCls(s){const k=(s||'').toLowerCase();return k.includes('anchor')?'sa':k.includes('moor')?'sm':k.includes('restrict')?'sr':'su';}
 function ir(pairs){return pairs.map(([l,r])=>`<div class="ir"><span class="il">${l}</span><span class="iv">${r}</span></div>`).join('');}
+function haversineM(a,b){const R=6371000,r=x=>x*Math.PI/180,d1=r(b.lat-a.lat),d2=r(b.lon-a.lon);return 2*R*Math.asin(Math.sqrt(Math.sin(d1/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(d2/2)**2));}
+function fmtD(m){return m<1000?`${Math.round(m)} m`:`${(m/1000).toFixed(2)} km`;}
+function ageStr(ts){if(!ts)return'No AIS yet';const s=Math.round((Date.now()-ts)/1000);if(s<60)return`${s}s ago`;if(s<3600)return`${Math.floor(s/60)}m ago`;return`${Math.floor(s/3600)}h ago`;}
+
 function genTrack(lat,lon,hdg,spd,n){
   const pts=[],rad=hdg*Math.PI/180;let la=lat,lo=lon;
-  for(let i=0;i<n;i++){const t=(n-1-i)/(n-1);la-=Math.cos(rad)*spd*.00013+(Math.random()-.5)*.022;lo-=Math.sin(rad)*spd*.00016+(Math.random()-.5)*.022;pts.unshift({lat:la,lon:lo,spd:Math.max(0,spd+(Math.random()-.5)*1.5),hdg:hdg+(Math.random()-.5)*7,ts:Date.now()-t*3600000});}
+  for(let i=0;i<n;i++){const t=(n-1-i)/(n-1);la-=Math.cos(rad)*spd*.00013+(Math.random()-.5)*.015;lo-=Math.sin(rad)*spd*.00016+(Math.random()-.5)*.015;pts.unshift({lat:la,lon:lo,spd:Math.max(0,spd+(Math.random()-.5)*1.2),hdg:hdg+(Math.random()-.5)*5,ts:Date.now()-t*3600000});}
   return pts;
 }
 function genRoute(lat,lon,hdg,spd,n){
   if(spd<1)return[{lat,lon}];const wps=[{lat,lon}];let la=lat,lo=lon;const rad=hdg*Math.PI/180;
-  for(let i=0;i<n;i++){la+=Math.cos(rad)*spd*.003+(Math.random()-.5)*.45;lo+=Math.sin(rad)*spd*.004+(Math.random()-.5)*.45;wps.push({lat:la,lon:lo});}
-  return wps;
+  for(let i=0;i<n;i++){la+=Math.cos(rad)*spd*.003+(Math.random()-.5)*.4;lo+=Math.sin(rad)*spd*.004+(Math.random()-.5)*.4;wps.push({lat:la,lon:lo});}return wps;
 }
-function blurb(v){
-  const spd=v.sog<1?'currently stationary':`underway at ${v.sog.toFixed(1)} kts`;
-  const dest=v.dest?`en route to <em>${v.dest}</em>`:'no declared destination';
-  const eta=v.eta&&v.eta!=='—'?`, ETA ${v.eta}`:'';
-  return `${cap(v.type)} in the ${v.area||'open sea'}, ${spd} and ${dest}${eta}. Last port: ${v.lastPort||'unknown'}.`;
-}
-// Distance between two latlngs in metres
-function haversineM(a,b){
-  const R=6371000,toR=x=>x*Math.PI/180;
-  const dLat=toR(b.lat-a.lat),dLon=toR(b.lon-a.lon);
-  const s=Math.sin(dLat/2)**2+Math.cos(toR(a.lat))*Math.cos(toR(b.lat))*Math.sin(dLon/2)**2;
-  return 2*R*Math.asin(Math.sqrt(s));
-}
-function fmtDist(m){return m<1000?`${Math.round(m)} m`:`${(m/1000).toFixed(2)} km`;}
 
-// ─── Vessel database ───────────────────────────────────────────
-// NOTE: AIS data sources: MarineTraffic, VesselFinder (all positions approximate at time of build)
-// To get live real-time positions, integrate aisstream.io or MarineTraffic API with your API key.
-const RAW=[
-  // ── Your fleet (real AIS positions, April 2026) ──
-  // Ocean Marlin: VesselFinder shows "36N 14E" = just south of Malta ✓ (matches your screenshot)
-  {name:'Ocean Marlin',     mmsi:'257768000',imo:'9669213',cs:'LAWV8', type:'offshore supply vessel',    flag:'🇳🇴',fc:'NO',dest:'ROV OPS',           sog:3.2,  hdg:197,cog:197,rot:.3, st:'Restricted',draft:5.5,len:66.8,bm:16.0,gt:2298, built:2014,lat:35.98,lon:14.02, area:'Central Mediterranean (Malta)',   lp:'Porto Empedocle, Italy',    eta:'Apr 16, 08:30'},
-  // VOS Gorgeous: North Sea, east of UK coast
-  {name:'VOS Gorgeous',     mmsi:'235103024',imo:'9680530',cs:'2HEN8', type:'standby safety vessel',     flag:'🇬🇧',fc:'GB',dest:'SURVEY CPA 500M',    sog:4.6,  hdg:55, cog:57, rot:.1,  st:'Restricted',draft:6.0,len:60.0,bm:15.0,gt:1969, built:2015,lat:56.45,lon:3.85,  area:'North Sea',                       lp:'Eemshaven, Netherlands',    eta:'Apr 19, 23:00'},
-  // Ross Eagle: North Sea, near Rotterdam / Maas
-  {name:'Ross Eagle',       mmsi:'258156000',imo:'9249465',cs:'JXYX',  type:'offshore supply vessel',    flag:'🇳🇴',fc:'NO',dest:'MAAS ENTRANCE',      sog:0.5,  hdg:245,cog:248,rot:0,   st:'Restricted',draft:4.5,len:72.0,bm:16.0,gt:2244, built:2003,lat:51.98,lon:4.18,  area:'North Sea, near Rotterdam',      lp:'Rotterdam Waalhaven',       eta:'Apr 16, 20:30'},
-  // Orient Explorer: Taiwan / South China Sea area
-  {name:'Orient Explorer',  mmsi:'416255500',imo:'9625114',cs:'BR4703',type:'offshore supply vessel',    flag:'🇹🇼',fc:'TW',dest:'TAICHUNG',           sog:9.8,  hdg:60, cog:58, rot:0,   st:'Underway',  draft:4.5,len:60.0,bm:16.0,gt:1500, built:2012,lat:24.50,lon:121.80, area:'Taiwan Strait',                  lp:'Taichung, Taiwan',          eta:'—'},
-  // Go Adventurer: US / Atlantic coast (last seen near Fort Pierce FL)
-  {name:'Go Adventurer',    mmsi:'368237180',imo:'9643087',cs:'WDM7780',type:'offshore supply vessel',   flag:'🇺🇸',fc:'US',dest:'PORT FOURCHON',      sog:0.1,  hdg:270,cog:270,rot:0,   st:'Moored',    draft:3.8,len:56.4,bm:14.0,gt:970,  built:2011,lat:27.45,lon:-80.35, area:'Fort Pierce, Florida',           lp:'Port Fourchon, LA',         eta:'—'},
-  // Sulmara WAM-V USV (Wave Adaptive Modular Vessel) — uncrewed surface vehicles, no IMO
-  {name:'Sulmara WAM-V 01', mmsi:'235999001',imo:'N/A',   cs:'SWAM1', type:'uncrewed surface vehicle',   flag:'🇬🇧',fc:'GB',dest:'SURVEY OPS',         sog:4.0,  hdg:90, cog:90, rot:0,   st:'Underway',  draft:0.3,len:4.0, bm:3.0, gt:0,    built:2022,lat:57.20,lon:0.50,  area:'North Sea (survey)',             lp:'Aberdeen',                  eta:'—'},
-  {name:'Sulmara WAM-V 02', mmsi:'235999002',imo:'N/A',   cs:'SWAM2', type:'uncrewed surface vehicle',   flag:'🇬🇧',fc:'GB',dest:'SURVEY OPS',         sog:3.5,  hdg:120,cog:118,rot:0,   st:'Underway',  draft:0.3,len:4.0, bm:3.0, gt:0,    built:2022,lat:57.18,lon:0.52,  area:'North Sea (survey)',             lp:'Aberdeen',                  eta:'—'},
-  {name:'Sulmara WAM-V 03', mmsi:'235999003',imo:'N/A',   cs:'SWAM3', type:'uncrewed surface vehicle',   flag:'🇬🇧',fc:'GB',dest:'SURVEY OPS',         sog:4.2,  hdg:45, cog:44, rot:0,   st:'Underway',  draft:0.3,len:4.0, bm:3.0, gt:0,    built:2023,lat:57.22,lon:0.48,  area:'North Sea (survey)',             lp:'Aberdeen',                  eta:'—'},
-  // Anduril Dive-LD AUV (autonomous underwater vehicle — no AIS, tracked via topside relay)
-  {name:'Anduril Dive-LD #1',mmsi:'000000001',imo:'N/A',  cs:'AUV01', type:'autonomous underwater vehicle',flag:'🇺🇸',fc:'US',dest:'SUBSEA OPS',        sog:3.0,  hdg:180,cog:180,rot:0,   st:'Underway',  draft:1.2,len:6.5, bm:0.6, gt:0,    built:2023,lat:28.10,lon:-90.50, area:'Gulf of Mexico (subsea ops)',    lp:'Port Fourchon, LA',         eta:'—'},
-  {name:'Anduril Dive-LD #2',mmsi:'000000002',imo:'N/A',  cs:'AUV02', type:'autonomous underwater vehicle',flag:'🇺🇸',fc:'US',dest:'SUBSEA OPS',        sog:2.8,  hdg:200,cog:198,rot:0,   st:'Underway',  draft:1.2,len:6.5, bm:0.6, gt:0,    built:2023,lat:28.08,lon:-90.52, area:'Gulf of Mexico (subsea ops)',    lp:'Port Fourchon, LA',         eta:'—'},
-  // ── Offshore supply / support fleet ──
-  {name:'Normand Flower',   mmsi:'258337000',imo:'9606091',cs:'LAXS',  type:'platform supply vessel',    flag:'🇳🇴',fc:'NO',dest:'BERGEN',             sog:12.5, hdg:300,cog:298,rot:0,   st:'Underway',  draft:5.8,len:93.0,bm:20.0,gt:4422, built:2013,lat:60.20,lon:3.50,  area:'North Sea',                      lp:'Aberdeen',                  eta:'—'},
-  {name:'Normand Installer',mmsi:'257665000',imo:'9258002',cs:'LAWP7', type:'construction vessel',        flag:'🇳🇴',fc:'NO',dest:'STAVANGER',          sog:9.0,  hdg:90, cog:88, rot:0,   st:'Underway',  draft:7.2,len:157.0,bm:27.0,gt:16151,built:2002,lat:58.50,lon:2.00,  area:'North Sea',                      lp:'Stavanger',                 eta:'—'},
-  {name:'Normand Mariner',  mmsi:'257580000',imo:'9323086',cs:'LAJY6', type:'AHTS',                       flag:'🇳🇴',fc:'NO',dest:'MONGSTAD',           sog:14.0, hdg:330,cog:328,rot:0,   st:'Underway',  draft:6.5,len:93.0,bm:22.0,gt:4649, built:2006,lat:61.00,lon:4.20,  area:'Norwegian Sea',                  lp:'Mongstad',                  eta:'—'},
-  {name:'Normand Vision',   mmsi:'257668000',imo:'9358003',cs:'LAWY3', type:'subsea vessel',              flag:'🇳🇴',fc:'NO',dest:'ABERDEEN',           sog:11.2, hdg:270,cog:268,rot:0,   st:'Underway',  draft:7.8,len:155.0,bm:27.0,gt:15506,built:2007,lat:59.80,lon:0.50,  area:'North Sea',                      lp:'Stavanger',                 eta:'—'},
-  {name:'Normand Pacific',  mmsi:'257670000',imo:'9358015',cs:'LAWY5', type:'subsea vessel',              flag:'🇳🇴',fc:'NO',dest:'ABERDEEN',           sog:9.8,  hdg:260,cog:258,rot:0,   st:'Underway',  draft:7.5,len:155.0,bm:27.0,gt:15506,built:2007,lat:57.90,lon:0.20,  area:'North Sea',                      lp:'Bergen',                    eta:'—'},
-  {name:'Normand Skarven',  mmsi:'257758000',imo:'9606066',cs:'LAWT2', type:'platform supply vessel',    flag:'🇳🇴',fc:'NO',dest:'STAVANGER',          sog:11.5, hdg:130,cog:128,rot:0,   st:'Underway',  draft:5.6,len:93.0,bm:20.0,gt:4422, built:2013,lat:58.00,lon:4.80,  area:'North Sea',                      lp:'Stavanger',                 eta:'—'},
-  {name:'Skandi Arctic',    mmsi:'257716000',imo:'9535133',cs:'LAWA4', type:'AHTS',                       flag:'🇳🇴',fc:'NO',dest:'HAMMERFEST',         sog:13.5, hdg:20, cog:22, rot:0,   st:'Underway',  draft:7.0,len:95.0,bm:24.0,gt:6166, built:2011,lat:71.50,lon:23.00, area:'Barents Sea',                    lp:'Hammerfest',                eta:'—'},
-  {name:'Skandi Buzios',    mmsi:'710012345',imo:'9624450',cs:'PPXB',  type:'platform supply vessel',    flag:'🇧🇷',fc:'BR',dest:'MACAE',              sog:10.0, hdg:200,cog:198,rot:0,   st:'Underway',  draft:5.5,len:89.0,bm:19.0,gt:3600, built:2014,lat:-22.00,lon:-40.00,area:'Campos Basin, Brazil',           lp:'Macaé',                     eta:'—'},
-  {name:'Skandi Hav',       mmsi:'257450000',imo:'9244793',cs:'LARM6', type:'AHTS',                       flag:'🇳🇴',fc:'NO',dest:'BERGEN',             sog:0.0,  hdg:180,cog:180,rot:0,   st:'Moored',    draft:6.0,len:88.0,bm:20.0,gt:3898, built:2002,lat:60.39,lon:5.32,  area:'Bergen, Norway',                 lp:'Bergen',                    eta:'—'},
-  {name:'Skandi Neptune',   mmsi:'257740000',imo:'9481560',cs:'LAWZ4', type:'subsea vessel',              flag:'🇳🇴',fc:'NO',dest:'ABERDEEN',           sog:8.5,  hdg:265,cog:263,rot:0,   st:'Underway',  draft:8.0,len:121.0,bm:23.0,gt:9102, built:2010,lat:58.20,lon:1.00,  area:'North Sea',                      lp:'Stavanger',                 eta:'—'},
-  {name:'VOS Pathfinder',   mmsi:'235059270',imo:'9537025',cs:'2DRS7', type:'standby safety vessel',     flag:'🇬🇧',fc:'GB',dest:'ABERDEEN',           sog:5.5,  hdg:340,cog:338,rot:0,   st:'Underway',  draft:5.0,len:60.0,bm:15.0,gt:1977, built:2011,lat:57.80,lon:1.20,  area:'North Sea',                      lp:'Aberdeen',                  eta:'—'},
-  {name:'VOS Sweet',        mmsi:'235102890',imo:'9680518',cs:'2HEN7', type:'standby safety vessel',     flag:'🇬🇧',fc:'GB',dest:'HULL',               sog:0.0,  hdg:90, cog:90, rot:0,   st:'Moored',    draft:5.8,len:60.0,bm:15.0,gt:1969, built:2015,lat:53.74,lon:-0.27, area:'Humber, UK',                     lp:'Hull',                      eta:'—'},
-  {name:'VOS Star',         mmsi:'235088610',imo:'9466791',cs:'2FCS6', type:'standby safety vessel',     flag:'🇬🇧',fc:'GB',dest:'GREAT YARMOUTH',     sog:3.8,  hdg:175,cog:173,rot:0,   st:'Underway',  draft:5.0,len:60.0,bm:14.5,gt:1850, built:2010,lat:53.10,lon:2.10,  area:'Southern North Sea',             lp:'Great Yarmouth',            eta:'—'},
-  {name:'VOS Champion',     mmsi:'235045210',imo:'9284350',cs:'2AZB5', type:'standby safety vessel',     flag:'🇬🇧',fc:'GB',dest:'ABERDEEN',           sog:4.2,  hdg:10, cog:8,  rot:0,   st:'Underway',  draft:5.2,len:63.0,bm:15.0,gt:2020, built:2005,lat:58.00,lon:0.80,  area:'North Sea',                      lp:'Aberdeen',                  eta:'—'},
-  {name:'Esvagt Aurora',    mmsi:'220582000',imo:'9553685',cs:'OXKH2', type:'standby safety vessel',     flag:'🇩🇰',fc:'DK',dest:'ESBJERG',            sog:5.2,  hdg:220,cog:218,rot:0,   st:'Underway',  draft:4.8,len:72.0,bm:16.0,gt:2730, built:2012,lat:56.00,lon:5.50,  area:'North Sea',                      lp:'Esbjerg',                   eta:'—'},
-  {name:'Esvagt Njord',     mmsi:'220511000',imo:'9231890',cs:'OUHA2', type:'standby safety vessel',     flag:'🇩🇰',fc:'DK',dest:'ESBJERG',            sog:0.0,  hdg:90, cog:90, rot:0,   st:'Moored',    draft:4.5,len:65.0,bm:15.0,gt:1800, built:2001,lat:55.46,lon:8.45,  area:'Esbjerg, Denmark',               lp:'Esbjerg',                   eta:'—'},
-  {name:'Maersk Cutter',    mmsi:'219658000',imo:'9386532',cs:'OUUT2', type:'AHTS',                       flag:'🇩🇰',fc:'DK',dest:'ESBJERG',            sog:0.0,  hdg:270,cog:270,rot:0,   st:'Anchored',  draft:6.8,len:93.0,bm:22.0,gt:4640, built:2008,lat:57.44,lon:10.54, area:'Kattegat, Denmark',              lp:'Frederikshavn',             eta:'—'},
-  {name:'Harvey Energy',    mmsi:'367508360',imo:'9587534',cs:'WDE4509',type:'AHTS',                      flag:'🇺🇸',fc:'US',dest:'PORT FOURCHON',      sog:14.0, hdg:330,cog:328,rot:0,   st:'Underway',  draft:7.0,len:94.0,bm:22.0,gt:6016, built:2013,lat:28.50,lon:-90.00,area:'Gulf of Mexico',                 lp:'Port Fourchon, LA',         eta:'—'},
-  {name:'Harvey Deep Sea',  mmsi:'367453290',imo:'9519678',cs:'WDE3381',type:'subsea vessel',             flag:'🇺🇸',fc:'US',dest:'NEW ORLEANS',        sog:8.0,  hdg:355,cog:353,rot:0,   st:'Underway',  draft:7.8,len:108.0,bm:24.0,gt:7600, built:2010,lat:27.80,lon:-91.00,area:'Gulf of Mexico',                 lp:'Port Fourchon, LA',         eta:'—'},
-  {name:'Go Explorer',      mmsi:'368230820',imo:'9469405',cs:'WDH2190',type:'offshore supply vessel',    flag:'🇺🇸',fc:'US',dest:'PORT FOURCHON',      sog:12.0, hdg:340,cog:338,rot:0,   st:'Underway',  draft:3.1,len:56.0,bm:14.0,gt:900,  built:2007,lat:28.80,lon:-90.20,area:'Gulf of Mexico',                 lp:'Port Fourchon, LA',         eta:'—'},
-  {name:'Olympic Zeus',     mmsi:'257883000',imo:'9484928',cs:'LBCY2', type:'AHTS',                       flag:'🇳🇴',fc:'NO',dest:'KRISTIANSUND',       sog:11.5, hdg:85, cog:83, rot:0,   st:'Underway',  draft:6.3,len:95.0,bm:24.0,gt:6212, built:2011,lat:64.50,lon:7.00,  area:'Norwegian Sea',                  lp:'Ålesund',                   eta:'—'},
-  {name:'Fugro Synergy',    mmsi:'246323000',imo:'9443869',cs:'PHSS',  type:'survey vessel',              flag:'🇳🇱',fc:'NL',dest:'ROTTERDAM',          sog:7.5,  hdg:260,cog:258,rot:0,   st:'Underway',  draft:5.0,len:75.0,bm:16.0,gt:3200, built:2009,lat:54.00,lon:4.50,  area:'North Sea',                      lp:'IJmuiden',                  eta:'—'},
-  {name:'Fugro Searcher',   mmsi:'246317000',imo:'9263007',cs:'PHSR',  type:'survey vessel',              flag:'🇳🇱',fc:'NL',dest:'ABERDEEN',           sog:8.2,  hdg:280,cog:278,rot:0,   st:'Underway',  draft:4.8,len:68.0,bm:14.0,gt:2400, built:2003,lat:57.50,lon:1.80,  area:'North Sea',                      lp:'Rotterdam',                 eta:'—'},
-  {name:'Bourbon Argos',    mmsi:'228270500',imo:'9531015',cs:'FMAB',  type:'subsea vessel',              flag:'🇫🇷',fc:'FR',dest:'LUANDA',             sog:9.0,  hdg:160,cog:158,rot:0,   st:'Underway',  draft:7.0,len:112.0,bm:22.0,gt:7051, built:2012,lat:-5.00,lon:8.00,  area:'Angola offshore',                lp:'Luanda, Angola',            eta:'—'},
-  {name:'Ever Given',       mmsi:'353136000',imo:'9811000',cs:'3EEA3', type:'container ship',             flag:'🇵🇦',fc:'PA',dest:'NLRTM',              sog:13.5, hdg:315,cog:312,rot:0,   st:'Underway',  draft:14.5,len:400.0,bm:58.8,gt:220940,built:2018,lat:29.90,lon:32.50,area:'Red Sea',                        lp:'Suez',                      eta:'—'},
-];
-
-const DB=RAW.map((r,i)=>({...r,id:i+100,heading:r.hdg,status:r.st,lastPort:r.lp,flagCode:r.fc,color:COLORS[i%COLORS.length]}));
-
-// ─── State ─────────────────────────────────────────────────────
-let vessels=[],selId=null,nextId=1000;
-let slVal=100,playing=false,playTmr=null;
-let map,layers={};
-let srPick=null,srTmr=null,ctxId=null;
-let bzActive=false,bzStart=null,bzRect=null,bzEl=null;
-let measureActive=false,measurePts=[],measureLines=[],measureMarkers=[];
+// ─── State ────────────────────────────────────────────────────
+let vessels=[], selId=null, nextId=1000;
+let slVal=100, playing=false, playTmr=null;
+let map, layers={};
+let srPick=null, srTmr=null, ctxId=null;
+let bzActive=false, bzStart=null, bzRect=null, bzEl=null;
+let msActive=false, msPts=[], msLines=[], msMarkers=[];
 let showCOG=true;
+let ws=null, wsKey='', liveMode=false;
+let lastGlobalAisTs=null;
+const mmsiIndex={};   // mmsi → vessel id
 
-function addToFleet(src){
-  const v={...src};
-  v.id=nextId++;
-  v.color=COLORS[vessels.length%COLORS.length];
-  v.track=genTrack(v.lat,v.lon,v.heading,v.sog,40);
-  v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()});
-  v.route=genRoute(v.lat,v.lon,v.heading,v.sog,5);
-  vessels.push(v);
-  return v;
+// ─── API Key management ───────────────────────────────────────
+function getKey(){return HARDCODED_API_KEY||localStorage.getItem('sulmara_ais_key')||'';}
+function saveKey(){
+  const k=document.getElementById('key-input').value.trim();
+  if(!k){alert('Please paste a valid API key first.');return;}
+  localStorage.setItem('sulmara_ais_key',k);
+  wsKey=k;
+  document.getElementById('api-banner').classList.remove('show');
+  connectAIS();
+}
+function dismissBanner(){
+  document.getElementById('api-banner').classList.remove('show');
+  setBadge('demo','⬤ Demo mode (no live AIS)');
 }
 
-function preload(){
-  ['Ocean Marlin','VOS Gorgeous','Ross Eagle'].forEach(n=>{
-    const s=DB.find(v=>v.name===n);if(s)addToFleet(s);
-  });
+// ─── Signal icon helpers ──────────────────────────────────────
+// strength: 0=no signal, 1=red, 2=orange, 3=green, 4=full green
+// Returns {bars, color, label}
+function sigInfo(aisTs, connected) {
+  if (!connected) return { bars:0, color:'#1e3a5f', label:'No connection' };
+  if (!aisTs)     return { bars:1, color:'#4a7fa5',  label:'Waiting…' };
+  const age = (Date.now() - aisTs) / 1000; // seconds
+  if (age <  60)  return { bars:4, color:'#1d9e75', label: age<5?'Just now':`${Math.round(age)}s ago` };
+  if (age < 120)  return { bars:3, color:'#5dcaa5', label:`${Math.round(age)}s ago` };
+  if (age < 300)  return { bars:2, color:'#e0a020', label:`${Math.floor(age/60)}m ago` };
+  if (age < 600)  return { bars:1, color:'#e08080', label:`${Math.floor(age/60)}m ago` };
+  return           { bars:0, color:'#e08080', label:`${Math.floor(age/60)}m+ stale` };
 }
 
-// ─── Map ───────────────────────────────────────────────────────
+function sigSVG(aisTs, connected, size) {
+  const s = size || 18;
+  const { bars, color } = sigInfo(aisTs, connected);
+  const dim = '#1e3a5f';
+  const c = (n) => bars >= n ? color : dim;
+  return `<svg width="${s}" height="${Math.round(s*0.75)}" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 13 Q11 1 21 13"   stroke="${c(4)}" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M3.5 13 Q11 4 18.5 13" stroke="${c(3)}" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M6 13 Q11 7 16 13"   stroke="${c(2)}" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M8.5 13 Q11 10 13.5 13" stroke="${c(1)}" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <circle cx="11" cy="14.5" r="1.5" fill="${c(1)}"/>
+  </svg>`;
+}
+
+function updateGlobalSignal() {
+  const { bars, color, label } = sigInfo(lastGlobalAisTs, liveMode);
+  const lbl = document.getElementById('conn-label');
+  const svg = document.getElementById('conn-signal');
+  if (!lbl || !svg) return;
+  if (!liveMode) {
+    lbl.textContent = wsKey ? 'Reconnecting…' : 'No API key';
+    lbl.style.color = '#4a7fa5';
+    ['sig-arc-4','sig-arc-3','sig-arc-2','sig-arc-1','sig-dot'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.setAttribute('stroke','#1e3a5f');
+    });
+    const dot = document.getElementById('sig-dot'); if(dot) dot.setAttribute('fill','#1e3a5f');
+    return;
+  }
+  const dim = '#1e3a5f';
+  const c = (n) => bars >= n ? color : dim;
+  const arcs = ['sig-arc-4','sig-arc-3','sig-arc-2','sig-arc-1'];
+  arcs.forEach((id, i) => { const el = document.getElementById(id); if(el) el.setAttribute('stroke', c(i+1 <= bars ? arcs.length - i : -1)); });
+  // simpler: just repaint all arcs correctly
+  document.getElementById('sig-arc-4').setAttribute('stroke', c(4));
+  document.getElementById('sig-arc-3').setAttribute('stroke', c(3));
+  document.getElementById('sig-arc-2').setAttribute('stroke', c(2));
+  document.getElementById('sig-arc-1').setAttribute('stroke', c(1));
+  document.getElementById('sig-dot').setAttribute('fill', c(1));
+  lbl.textContent = liveMode ? (lastGlobalAisTs ? label : 'Waiting for AIS…') : 'Connecting…';
+  lbl.style.color = color;
+}
+
+function setBadge(type, txt) {
+  // Legacy — now handled by updateGlobalSignal, but keep for compat
+  const lbl = document.getElementById('conn-label');
+  if (lbl) lbl.textContent = txt.replace(/^[⬤✓⏳⚠]\s*/,'');
+}
+
+// ─── aisstream.io WebSocket ───────────────────────────────────
+function connectAIS(){
+  const key=wsKey||getKey();
+  if(!key){
+    // No key — show setup banner
+    document.getElementById('api-banner').classList.add('show');
+    setBadge('key','⚠ API key needed');
+    return;
+  }
+
+  if(ws){try{ws.close();}catch(e){}}
+  setBadge('conn','⬤ Connecting…');
+
+  ws=new WebSocket('wss://stream.aisstream.io/v0/stream');
+
+  ws.onopen=()=>{
+    // Subscribe to position reports for all tracked vessels' MMSIs
+    const mmsis=vessels.map(v=>v.mmsi).filter(m=>m&&!m.startsWith('0')&&!m.startsWith('235999'));
+    ws.send(JSON.stringify({
+      Apikey: key,
+      BoundingBoxes: [[ [-90,-180],[90,180] ]],  // global
+      FiltersShipMMSI: mmsis,
+      FilterMessageTypes: ['PositionReport','ShipStaticData']
+    }));
+    liveMode=true;
+    updateGlobalSignal();
+  };
+
+  ws.onmessage=e=>{
+    try{
+      const msg=JSON.parse(e.data);
+      handleAIS(msg);
+    }catch(err){}
+  };
+
+  ws.onerror=()=>{
+    liveMode=false;
+    updateGlobalSignal();
+  };
+
+  ws.onclose=()=>{
+    if(liveMode){
+      liveMode=false;
+      updateGlobalSignal();
+      setTimeout(connectAIS,5000); // auto-reconnect
+    }
+  };
+}
+
+// Resubscribe when fleet changes (vessel added/removed)
+function resubscribe(){
+  if(!ws||ws.readyState!==1)return;
+  const mmsis=vessels.map(v=>v.mmsi).filter(m=>m&&!m.startsWith('0')&&!m.startsWith('235999'));
+  ws.send(JSON.stringify({
+    Apikey: wsKey||getKey(),
+    BoundingBoxes: [[ [-90,-180],[90,180] ]],
+    FiltersShipMMSI: mmsis,
+    FilterMessageTypes: ['PositionReport','ShipStaticData']
+  }));
+}
+
+function handleAIS(msg){
+  const type=msg.MessageType;
+  const meta=msg.MetaData||{};
+  const mmsi=String(meta.MMSI||meta.MMSI_String||'');
+  if(!mmsi)return;
+
+  const vid=mmsiIndex[mmsi];
+  if(vid==null)return;
+  const v=vessels.find(x=>x.id===vid);
+  if(!v)return;
+
+  if(type==='PositionReport'){
+    const r=msg.Message.PositionReport;
+    // Validate coordinates (AIS sends 91/181 as "not available")
+    if(Math.abs(r.Latitude)>90||Math.abs(r.Longitude)>180)return;
+    v.lat=r.Latitude;
+    v.lon=r.Longitude;
+    v.sog=r.Sog||0;
+    v.cog=r.Cog||0;
+    v.heading=r.TrueHeading&&r.TrueHeading<360?r.TrueHeading:r.Cog||0;
+    v.rot=r.RateOfTurn||0;
+    v.navStatus=r.NavigationalStatus;
+    v.status=navStatusStr(r.NavigationalStatus);
+    v.aisTs=Date.now();
+    lastGlobalAisTs=Date.now();
+    updateGlobalSignal();
+    // Append to track — smart rate (stationary vessels skip most updates)
+    const stationary=v.sog<0.5;
+    const lastPt=v.track[v.track.length-1];
+    const timeSince=lastPt?Date.now()-lastPt.ts:999999;
+    const minGap=stationary?300000:15000; // 5 min if stopped, 15s if moving
+    if(timeSince>=minGap){
+      v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()});
+      if(v.track.length>200)v.track.shift();
+      if(v.route.length>0)v.route[0]={lat:v.lat,lon:v.lon};
+    }
+    if(slVal===100)drawV(v);
+  }
+
+  if(type==='ShipStaticData'){
+    const r=msg.Message.ShipStaticData;
+    if(r.Name&&r.Name.trim())v.aisName=r.Name.trim();
+    if(r.Destination)v.dest=r.Destination.trim();
+    if(r.Eta)v.eta=r.Eta;
+    if(r.MaximumStaticDraught)v.draft=r.MaximumStaticDraught;
+  }
+
+  if(slVal===100){renderSB();updateIP();}
+}
+
+function navStatusStr(n){
+  const s=['Underway','Anchored','Not under command','Restricted','Constrained by draught','Moored','Aground','Fishing','Underway sailing'];
+  return s[n]||'Underway';
+}
+
+// ─── Map ──────────────────────────────────────────────────────
 function initMap(){
   map=L.map('map',{zoomControl:false,attributionControl:true,minZoom:2,worldCopyJump:false,maxBounds:[[-85,-200],[85,200]],maxBoundsViscosity:.9}).setView([20,0],2);
   const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri, Maxar',maxZoom:18,crossOrigin:true});
@@ -349,10 +555,10 @@ function initMap(){
   const sea=L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{attribution:'© OpenSeaMap',maxZoom:18,opacity:.7});
   sat.addTo(map);lbl.addTo(map);
   L.control.layers({'🛰 Satellite':sat,'🗺 Street map':osm},{'Place labels':lbl,'⚓ Nautical marks':sea},{position:'topright',collapsed:true}).addTo(map);
-  map.on('click',e=>{hideCtx();hideVZMenu();if(measureActive)handleMeasureClick(e);});
+  map.on('click',e=>{hideCtx();hideVZMenu();if(msActive)handleMsClick(e);});
 }
 
-// ─── Drawing ───────────────────────────────────────────────────
+// ─── Drawing ──────────────────────────────────────────────────
 function vIcon(col,hdg,sel){
   const s=sel?20:15;
   return L.divIcon({html:`<svg width="${s*2}" height="${s*2}" viewBox="-${s} -${s} ${s*2} ${s*2}" xmlns="http://www.w3.org/2000/svg"><g transform="rotate(${hdg})"><polygon points="0,${-s*.82} ${s*.46},${s*.72} 0,${s*.42} ${-s*.46},${s*.72}" fill="${col}" stroke="white" stroke-width="${sel?2:1.5}" stroke-linejoin="round"/></g>${sel?`<circle cx="0" cy="0" r="${s-1}" fill="none" stroke="${col}" stroke-width="1.5" stroke-dasharray="4,3" opacity=".8"/>`:''}`,iconSize:[s*2,s*2],iconAnchor:[s,s],className:''});
@@ -360,7 +566,7 @@ function vIcon(col,hdg,sel){
 
 function drawV(v){
   const lyr=layers[v.id]||{};
-  const vis=Math.round(slVal/100*40);
+  const vis=Math.round(slVal/100*Math.min(v.track.length,60));
   const pts=v.track.slice(Math.max(0,v.track.length-vis-1));
 
   if(lyr.track)lyr.track.forEach(l=>map.removeLayer(l));
@@ -376,8 +582,9 @@ function drawV(v){
   if(showCOG){const cr=v.cog*Math.PI/180,cl=v.sog>1?.28:.07;lyr.cog=L.polyline([[v.lat,v.lon],[v.lat+Math.cos(cr)*cl,v.lon+Math.sin(cr)*cl]],{color:'#ffdc32',weight:2.2,opacity:.9}).addTo(map);}
 
   if(lyr.marker)map.removeLayer(lyr.marker);
-  lyr.marker=L.marker([v.lat,v.lon],{icon:vIcon(v.color,v.heading,selId===v.id)}).addTo(map)
-    .bindTooltip(`<b>${v.flag} ${v.name}</b><br>SOG ${v.sog.toFixed(1)} kts · HDG ${Math.round(v.heading)}°<br>${v.status} → ${v.dest||'—'}`,{direction:'right',offset:[12,0],opacity:.95});
+  const stale=v.aisTs&&(Date.now()-v.aisTs>600000); // >10 min since last AIS = stale
+  lyr.marker=L.marker([v.lat,v.lon],{icon:vIcon(stale?'#888':v.color,v.heading,selId===v.id)}).addTo(map)
+    .bindTooltip(`<b>${v.flag} ${v.name}</b><br>SOG ${v.sog.toFixed(1)} kts · HDG ${Math.round(v.heading)}°<br>${v.status||'—'} → ${v.dest||'—'}<br>${liveMode?ageStr(v.aisTs):'Demo mode'}`,{direction:'right',offset:[12,0],opacity:.95});
   lyr.marker.on('click',()=>{hideCtx();selV(v.id);});
   layers[v.id]=lyr;
 }
@@ -390,7 +597,7 @@ function clearLayer(id){
 }
 function redrawAll(){vessels.forEach(drawV);}
 
-// ─── Sidebar ───────────────────────────────────────────────────
+// ─── Sidebar ──────────────────────────────────────────────────
 function renderSB(){
   const el=document.getElementById('vlist');el.innerHTML='';
   if(!vessels.length){el.innerHTML='<div style="padding:20px;text-align:center;color:#4a7fa5;font-size:12px;">No vessels tracked.<br>Click "+ Add vessel" to begin.</div>';document.getElementById('vcnt').textContent='0 vessels tracked';return;}
@@ -398,7 +605,15 @@ function renderSB(){
     const div=document.createElement('div');
     div.className='vi'+(selId===v.id?' active':'');
     div.dataset.id=v.id;
-    div.innerHTML=`<div class="vn"><span class="vdot" style="background:${v.color}"></span>${v.flag}&nbsp;${v.name}</div><div class="vm">${v.mmsi} · ${v.flagCode} · Built ${v.built}</div><div class="vs"><span>SOG <b>${v.sog.toFixed(1)} kts</b></span><span>HDG <b>${Math.round(v.heading)}°</b></span><span>Draft <b>${v.draft}m</b></span></div><span class="vstatus ${stCls(v.status)}">${v.status}</span><div class="vb">${blurb(v)}</div>`;
+    const { color, label } = sigInfo(v.aisTs, liveMode);
+    const sigHtml = `<div class="sig-wrap">${sigSVG(v.aisTs, liveMode, 16)}<span class="sig-label" style="color:${color}">${label}</span></div>`;
+    div.innerHTML=`
+      <div class="vn"><span class="vdot" style="background:${v.color}"></span>${v.flag}&nbsp;${v.aisName||v.name}</div>
+      <div class="vm">${v.mmsi} · ${v.fc} · Built ${v.built}</div>
+      <div class="vstats"><span>SOG <b>${v.sog.toFixed(1)} kts</b></span><span>HDG <b>${Math.round(v.heading)}°</b></span><span>Draft <b>${v.draft}m</b></span></div>
+      <span class="vstatus ${stCls(v.status||'')}">${v.status||'—'}</span>
+      ${sigHtml}
+      <div class="vblurb">${v.type} · ${v.area}${v.dest?' → '+v.dest:''}</div>`;
     div.addEventListener('click',()=>{hideCtx();selV(v.id);});
     div.addEventListener('contextmenu',e=>{e.preventDefault();showCtx(e,v.id);});
     el.appendChild(div);
@@ -409,14 +624,18 @@ function renderSB(){
 function updateIP(){
   const v=vessels.find(x=>x.id===selId);
   if(!v){document.getElementById('ipn').textContent='Select a vessel';document.getElementById('ipb').innerHTML='<span style="color:#4a7fa5">Click a vessel on the map or in the sidebar.</span>';return;}
-  document.getElementById('ipn').innerHTML=`${v.flag}&nbsp;${v.name}`;
+  document.getElementById('ipn').innerHTML=`${v.flag}&nbsp;${v.aisName||v.name}`;
+  const { color:sc, label:sl } = sigInfo(v.aisTs, liveMode);
+  const aisInfo = liveMode
+    ? `<div style="display:flex;align-items:center;gap:6px;margin-top:6px;">${sigSVG(v.aisTs, liveMode, 18)}<span style="font-size:10px;color:${sc};">${sl}</span></div>`
+    : '<div style="font-size:10px;color:#4a7fa5;margin-top:5px;">Demo mode — enter API key for live positions</div>';
   document.getElementById('ipb').innerHTML=
-    ir([['IMO',v.imo],['MMSI',v.mmsi],['Call sign',v.cs],['Type',cap(v.type)],['Built',v.built],['Size',`${v.len}×${v.bm}m`],['GT',v.gt>0?v.gt.toLocaleString():'N/A']])+
+    ir([['IMO',v.imo],['MMSI',v.mmsi],['Call sign',v.cs],['Type',v.type],['Built',v.built],['Size',`${v.len}×${v.bm}m`],['GT',v.gt>0?v.gt.toLocaleString():'N/A']])+
     '<div class="isep"></div>'+
-    ir([['SOG',v.sog.toFixed(1)+' kts'],['COG',Math.round(v.cog)+'°'],['Heading',Math.round(v.heading)+'°'],['Draft',v.draft+' m'],['Status',v.status]])+
+    ir([['SOG',v.sog.toFixed(1)+' kts'],['COG',Math.round(v.cog)+'°'],['Heading',Math.round(v.heading)+'°'],['Draft',v.draft+' m'],['Status',v.status||'—']])+
     '<div class="isep"></div>'+
-    ir([['Destination',v.dest||'—'],['ETA',v.eta||'—'],['Last port',v.lastPort||'—']])+
-    `<div style="font-size:10px;color:#2a5a8c;margin-top:5px;">${v.lat.toFixed(4)}°N ${Math.abs(v.lon).toFixed(4)}°${v.lon<0?'W':'E'}</div>`;
+    ir([['Destination',v.dest||'—'],['ETA',v.eta||'—']])+
+    `<div style="font-size:10px;color:#2a5a8c;margin-top:5px;">${v.lat.toFixed(4)}°N ${Math.abs(v.lon).toFixed(4)}°${v.lon<0?'W':'E'}</div>`+aisInfo;
 }
 
 function selV(id){
@@ -425,14 +644,31 @@ function selV(id){
   if(v)map.flyTo([v.lat,v.lon],Math.max(map.getZoom(),7),{duration:1.2});
 }
 
-// ─── Toolbar actions ───────────────────────────────────────────
+function addToFleet(src){
+  const v={...src};
+  v.id=nextId++;
+  v.color=COLORS[vessels.length%COLORS.length];
+  v.sog=src.sog||0;
+  v.cog=src.cog||0;
+  v.heading=src.heading||0;
+  v.status=src.status||'—';
+  v.aisTs=null;
+  v.aisName=null;
+  v.track=genTrack(v.lat,v.lon,v.heading,v.sog,10); // small fallback track
+  v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()});
+  v.route=genRoute(v.lat,v.lon,v.heading,v.sog,4);
+  vessels.push(v);
+  mmsiIndex[v.mmsi]=v.id;
+  return v;
+}
+
+// ─── Toolbar ──────────────────────────────────────────────────
 function zoomWorld(){map.flyTo([20,0],2,{duration:1});}
 function zoomFleet(){
   if(!vessels.length)return zoomWorld();
   map.flyToBounds(L.latLngBounds(vessels.map(v=>[v.lat,v.lon])).pad(.4),{duration:1.2,maxZoom:10});
 }
 
-// Box zoom
 function toggleBZ(){
   bzActive=!bzActive;
   document.getElementById('btn-bz').classList.toggle('active',bzActive);
@@ -447,15 +683,13 @@ document.getElementById('map').addEventListener('mousedown',e=>{
   if(bzEl)document.getElementById('map').removeChild(bzEl);
   bzEl=document.createElement('div');
   Object.assign(bzEl.style,{position:'absolute',border:'2px dashed #378add',background:'rgba(55,138,221,.1)',pointerEvents:'none',zIndex:'999'});
-  document.getElementById('map').appendChild(bzEl);
-  map.dragging.disable();
+  document.getElementById('map').appendChild(bzEl);map.dragging.disable();
 });
 document.addEventListener('mousemove',e=>{
   if(!bzActive||!bzStart||!bzEl)return;
   const r=document.getElementById('map').getBoundingClientRect();
   const cx=e.clientX-r.left,cy=e.clientY-r.top,x=Math.min(bzStart.x,cx),y=Math.min(bzStart.y,cy),w=Math.abs(cx-bzStart.x),h=Math.abs(cy-bzStart.y);
-  Object.assign(bzEl.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});
-  bzRect={x,y,w,h};
+  Object.assign(bzEl.style,{left:x+'px',top:y+'px',width:w+'px',height:h+'px'});bzRect={x,y,w,h};
 });
 document.addEventListener('mouseup',()=>{
   if(!bzActive||!bzStart)return;
@@ -468,125 +702,74 @@ document.addEventListener('mouseup',()=>{
   bzStart=null;bzRect=null;if(bzActive)toggleBZ();
 });
 
-// Vessel zoom dropdown
 function toggleVZMenu(){
   const dd=document.getElementById('vzd');
   if(dd.classList.contains('show')){hideVZMenu();return;}
-  dd.innerHTML=vessels.length?vessels.map(v=>`<div class="vzi" onclick="flyV(${v.id})"><span class="vzidot" style="background:${v.color}"></span>${v.flag} ${v.name}</div>`).join(''):'<div style="padding:10px 13px;font-size:11px;color:#4a7fa5;">No vessels tracked</div>';
+  dd.innerHTML=vessels.length?vessels.map(v=>`<div class="vzi" onclick="flyV(${v.id})"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${v.color};flex-shrink:0;"></span>${v.flag} ${v.aisName||v.name}</div>`).join(''):'<div style="padding:10px 13px;font-size:11px;color:#4a7fa5;">No vessels tracked</div>';
   dd.classList.add('show');document.getElementById('btn-vz').classList.add('active');
 }
 function hideVZMenu(){document.getElementById('vzd').classList.remove('show');document.getElementById('btn-vz').classList.remove('active');}
 function flyV(id){hideVZMenu();selV(id);}
 
-// COG toggle
-function toggleCOG(){
-  showCOG=!showCOG;
-  document.getElementById('btn-cog').classList.toggle('active',!showCOG);
-  redrawAll();
-}
+function toggleCOG(){showCOG=!showCOG;document.getElementById('btn-cog').classList.toggle('off',!showCOG);redrawAll();}
 
-// ─── Measure tool ──────────────────────────────────────────────
+// Measure
 function toggleMeasure(){
-  measureActive=!measureActive;
-  document.getElementById('btn-measure').classList.toggle('active',measureActive);
-  if(!measureActive)clearMeasure();
+  msActive=!msActive;
+  document.getElementById('btn-ms').classList.toggle('active',msActive);
+  if(!msActive){clearMs();document.getElementById('map').style.cursor='';}
   else document.getElementById('map').style.cursor='crosshair';
 }
-
-function handleMeasureClick(e){
-  if(!measureActive)return;
-  const pt={lat:e.latlng.lat,lon:e.latlng.lng};
-  measurePts.push(pt);
-  // Place dot marker
+function handleMsClick(e){
+  const pt={lat:e.latlng.lat,lon:e.latlng.lng};msPts.push(pt);
   const m=L.circleMarker([pt.lat,pt.lon],{radius:5,color:'#ffdc32',fillColor:'#ffdc32',fillOpacity:1,weight:2}).addTo(map);
-  measureMarkers.push(m);
-  if(measurePts.length>1){
-    const prev=measurePts[measurePts.length-2];
-    const dist=haversineM(prev,pt);
-    const totalDist=measurePts.reduce((acc,p,i)=>i>0?acc+haversineM(measurePts[i-1],p):acc,0);
+  msMarkers.push(m);
+  if(msPts.length>1){
+    const prev=msPts[msPts.length-2],dist=haversineM(prev,pt);
+    const total=msPts.reduce((a,p,i)=>i>0?a+haversineM(msPts[i-1],p):a,0);
     const line=L.polyline([[prev.lat,prev.lon],[pt.lat,pt.lon]],{color:'#ffdc32',weight:2,opacity:.9,dashArray:'6,3'}).addTo(map);
-    measureLines.push(line);
-    // Tooltip showing segment and total
-    const segStr=fmtDist(dist);
-    const totStr=measurePts.length>2?` (total: ${fmtDist(totalDist)})`:'';
-    m.bindTooltip(`${segStr}${totStr}`,{permanent:true,direction:'right',offset:[8,0],className:'measure-tip'}).openTooltip();
-  } else {
-    m.bindTooltip('Start point — click to add more',{permanent:false,direction:'right',offset:[8,0],className:'measure-tip'});
-  }
+    msLines.push(line);
+    const extra=msPts.length>2?` (total: ${fmtD(total)})`:'';
+    m.bindTooltip(`${fmtD(dist)}${extra}`,{permanent:true,direction:'right',offset:[8,0],className:'mtip'}).openTooltip();
+  }else m.bindTooltip('Start — click more points. Double-click to finish.',{direction:'right',offset:[8,0],className:'mtip'});
 }
+function clearMs(){msLines.forEach(l=>map.removeLayer(l));msMarkers.forEach(m=>map.removeLayer(m));msPts=[];msLines=[];msMarkers=[];}
+document.getElementById('map').addEventListener('dblclick',e=>{if(msActive){e.stopPropagation();toggleMeasure();}});
 
-function clearMeasure(){
-  measureLines.forEach(l=>map.removeLayer(l));
-  measureMarkers.forEach(m=>map.removeLayer(m));
-  measurePts=[];measureLines=[];measureMarkers=[];
-  document.getElementById('map').style.cursor='';
-}
-
-// Double-click ends measure
-document.getElementById('map').addEventListener('dblclick',e=>{
-  if(measureActive){e.stopPropagation();toggleMeasure();}
-});
-
-// ─── Context menu ──────────────────────────────────────────────
-function showCtx(e,id){
-  ctxId=id;const v=vessels.find(x=>x.id===id);
-  document.getElementById('ctx-sl').textContent=`Select "${v.name}"`;
-  const c=document.getElementById('ctx');c.style.left=e.pageX+'px';c.style.top=e.pageY+'px';c.classList.add('show');
-}
+// ─── Context menu ─────────────────────────────────────────────
+function showCtx(e,id){ctxId=id;const v=vessels.find(x=>x.id===id);document.getElementById('ctx-sl').textContent=`Select "${v.aisName||v.name}"`;const c=document.getElementById('ctx');c.style.left=e.pageX+'px';c.style.top=e.pageY+'px';c.classList.add('show');}
 function hideCtx(){document.getElementById('ctx').classList.remove('show');ctxId=null;}
 function ctxZoom(){if(!ctxId)return;const v=vessels.find(x=>x.id===ctxId);if(v)map.flyTo([v.lat,v.lon],8,{duration:1.2});hideCtx();}
 function ctxFit(){hideCtx();zoomFleet();}
 function ctxSel(){if(ctxId)selV(ctxId);hideCtx();}
 function ctxRemove(){
   if(!ctxId)return;
-  clearLayer(ctxId);vessels=vessels.filter(v=>v.id!==ctxId);
+  clearLayer(ctxId);
+  const v=vessels.find(x=>x.id===ctxId);
+  if(v)delete mmsiIndex[v.mmsi];
+  vessels=vessels.filter(v=>v.id!==ctxId);
   if(selId===ctxId){selId=null;updateIP();}
-  hideCtx();renderSB();
+  hideCtx();renderSB();resubscribe();
 }
 document.addEventListener('click',e=>{
   if(!document.getElementById('ctx').contains(e.target))hideCtx();
   if(!document.getElementById('vz-wrap').contains(e.target))hideVZMenu();
 });
 
-// ─── Timeline ──────────────────────────────────────────────────
-function onSl(v){
-  slVal=parseInt(v);
-  const m=Math.round((100-slVal)*24);
-  document.getElementById('tltxt').textContent=slVal===100?'Now (live)':m+' min ago';
-  redrawAll();
-}
+// ─── Timeline ─────────────────────────────────────────────────
+function onSl(v){slVal=parseInt(v);const m=Math.round((100-slVal)*24);document.getElementById('tltxt').textContent=slVal===100?'Now (live)':m+' min ago';redrawAll();}
 function togglePlay(){
-  playing=!playing;
-  document.getElementById('playbtn').textContent=playing?'⏸ Pause':'▶ Play';
+  playing=!playing;document.getElementById('pbtn').textContent=playing?'⏸ Pause':'▶ Play';
   if(playing){const sl=document.getElementById('tlsl');sl.value=0;slVal=0;
-    playTmr=setInterval(()=>{const sp=parseInt(document.getElementById('spsel').value);slVal=Math.min(100,slVal+sp);sl.value=slVal;onSl(slVal);if(slVal>=100){playing=false;clearInterval(playTmr);document.getElementById('playbtn').textContent='▶ Play';}},120);
+    playTmr=setInterval(()=>{const sp=parseInt(document.getElementById('spsel').value);slVal=Math.min(100,slVal+sp);sl.value=slVal;onSl(slVal);if(slVal>=100){playing=false;clearInterval(playTmr);document.getElementById('pbtn').textContent='▶ Play';}},120);
   }else clearInterval(playTmr);
 }
 
-// ─── Simulation ────────────────────────────────────────────────
-// Smart update rate: fast when moving (every 2s), slow when stationary (every 5 min = 300s)
-// We simulate this by skipping position update for stationary vessels most ticks
-let tickCount=0;
-setInterval(()=>{
-  tickCount++;
-  vessels.forEach(v=>{
-    const stationary=v.sog<0.8;
-    // Stationary vessels: update every 150 ticks (150×2s = 5min). Moving: every tick.
-    if(stationary&&tickCount%150!==0)return;
-    if(!stationary){
-      const rad=v.heading*Math.PI/180;
-      v.lat+=Math.cos(rad)*v.sog*.000055;v.lon+=Math.sin(rad)*v.sog*.000075;
-      v.heading+=(Math.random()-.5)*1.2;v.cog=v.heading+(Math.random()-.5)*2;
-      v.sog=Math.max(.3,Math.min(25,v.sog+(Math.random()-.5)*.25));
-    }
-    v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()});
-    if(v.track.length>100)v.track.shift();
-    if(v.route.length>0)v.route[0]={lat:v.lat,lon:v.lon};
-  });
-  if(slVal===100){renderSB();updateIP();redrawAll();}
-},2000);
+// ─── Periodic UI refresh ──────────────────────────────────────
+// Refreshes AIS age labels and signal icons every 10 seconds
+setInterval(()=>{updateGlobalSignal();if(slVal===100){renderSB();updateIP();}},10000);
 
-// ─── Modal search ──────────────────────────────────────────────
+// ─── Modal search ─────────────────────────────────────────────
 function openModal(){
   document.getElementById('mo').classList.add('show');
   const inp=document.getElementById('si');inp.value='';
@@ -604,36 +787,44 @@ function onSrch(val){
   srTmr=setTimeout(()=>{
     const q=val.toLowerCase().trim();
     const tracked=vessels.map(v=>v.mmsi);
-    const res=DB.filter(v=>
+    const res=REGISTRY.filter(v=>
       v.name.toLowerCase().includes(q)||v.mmsi.includes(q)||(v.imo&&v.imo.includes(q))||(v.cs&&v.cs.toLowerCase().includes(q))||
-      v.type.toLowerCase().includes(q)||v.fc.toLowerCase().includes(q)||(v.area&&v.area.toLowerCase().includes(q))||(v.lp&&v.lp.toLowerCase().includes(q))
+      v.type.toLowerCase().includes(q)||v.fc.toLowerCase().includes(q)||(v.area&&v.area.toLowerCase().includes(q))
     ).slice(0,12);
-    document.getElementById('mst').textContent=res.length?`${res.length} vessel${res.length!==1?'s':''} found`:'No vessels found';
-    if(!res.length){document.getElementById('mres').innerHTML='<div class="re">No matches.<br><br>Try: Ocean Marlin · Orient Explorer · Go Adventurer · WAM-V · AUV · Normand · Skandi · VOS · Harvey · Esvagt · AHTS · PSV · survey · North Sea · Gulf of Mexico</div>';return;}
+    document.getElementById('mst').textContent=res.length?`${res.length} vessel${res.length!==1?'s':''} found`:'No vessels found — try name, MMSI, fleet or type';
+    if(!res.length){document.getElementById('mres').innerHTML='<div class="re">No matches.<br><br>Try: Ocean Marlin · VOS · Ross Eagle · Orient · Go Adventurer · Normand · Skandi · Harvey · Esvagt · WAM-V · AUV · AHTS · PSV · survey · North Sea</div>';return;}
     document.getElementById('mres').innerHTML=res.map((v,i)=>{
       const t=tracked.includes(v.mmsi);
-      return `<div class="ri${t?' sel':''}" id="ri${i}" onclick="${t?'':('pr('+i+')')}"><div class="rn">${v.flag} ${v.name} ${t?'<span style="color:#5dcaa5;font-size:10px;font-weight:400;">✓ tracking</span>':''}</div><div class="rm">IMO ${v.imo} · MMSI ${v.mmsi} · ${cap(v.type)} · ${v.fc}</div><div class="rp">${v.area} — ${v.sog.toFixed(1)} kts · ${v.st}</div></div>`;
+      return `<div class="ri${t?' sel':''}" id="ri${i}" onclick="${t?'':('pr('+i+')')}"><div class="rn">${v.flag} ${v.name} ${t?'<span style="color:#5dcaa5;font-size:10px;font-weight:400;">✓ tracking</span>':''}</div><div class="rm">IMO ${v.imo} · MMSI ${v.mmsi} · ${v.type} · ${v.fc}</div><div class="rp">${v.area}</div></div>`;
     }).join('');
     window.__sr=res;
   },250);
 }
-
 function pr(i){document.querySelectorAll('.ri').forEach(e=>e.classList.remove('sel'));const e=document.getElementById('ri'+i);if(e)e.classList.add('sel');srPick=window.__sr[i];setAdd(true);}
-
 function confirmAdd(){
   if(!srPick)return;
   const ex=vessels.find(v=>v.mmsi===srPick.mmsi);if(ex){closeModal();selV(ex.id);return;}
   const v=addToFleet(srPick);selId=v.id;
   closeModal();renderSB();updateIP();drawV(v);
   map.flyTo([v.lat,v.lon],6,{duration:1.5});
+  resubscribe(); // tell AIS stream about new vessel
 }
-
 document.getElementById('mo').addEventListener('click',e=>{if(e.target===document.getElementById('mo'))closeModal();});
 
-// ─── Boot ──────────────────────────────────────────────────────
+// ─── Boot ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  preload();initMap();redrawAll();renderSB();updateIP();
+  // Pre-load the three primary fleet vessels
+  ['Ocean Marlin','VOS Gorgeous','Ross Eagle'].forEach(n=>{
+    const src=REGISTRY.find(v=>v.name===n);if(src)addToFleet(src);
+  });
+
+  initMap();redrawAll();renderSB();updateIP();
   setTimeout(zoomFleet,400);
+
+  // Connect to live AIS
+  wsKey=getKey();
+  connectAIS();
+  updateGlobalSignal();
 });
 </script>
 </body>
