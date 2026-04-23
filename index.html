@@ -244,12 +244,6 @@
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────
-// Paste your Cloudflare Worker URL here once deployed, e.g.:
-// const PROXY_URL = 'wss://sulmara-ais.yourname.workers.dev';
-// Or leave blank and enter it via the banner on first run.
-const PROXY_URL = '';
-
 const COLORS=['#378add','#1d9e75','#d85a30','#7f77dd','#e0a020','#d4537e','#5dcaa5','#f09595','#60c0e0','#a0d870'];
 
 // ─── VESSEL REGISTRY ──────────────────────────────────────────
@@ -378,94 +372,48 @@ function processAIS(text) {
   } catch(err) { /* skip malformed */ }
 }
 
-function connectWS(url) {
-  if (!url) { document.getElementById('setup-banner').classList.add('show'); updateHeaderSig(); return; }
-  if (ws) { try{ws.close();}catch(e){} }
+// Direct connection to aisstream.io — no proxy needed
+// Key is visible in source; acceptable for internal/private tools
+const AIS_KEY = 'b7b1326d4531fc352412f6ba0bc8aa3287c1b194';
 
-  console.log('[Sulmara] Connecting to:', url);
-  showConnStatus('Connecting to ' + url + '…', '#e0a020');
-
-  try {
-    ws = new WebSocket(url);
-  } catch(e) {
-    showConnStatus('WebSocket error: ' + e.message, '#e08080');
-    console.error('[Sulmara] WebSocket constructor error:', e);
-    return;
-  }
-
-  ws.binaryType = 'blob';
+function connectWS() {
+  if (ws) { try { ws.close(); } catch(e) {} }
+  console.log('[Sulmara] Connecting to aisstream.io…');
+  showConnStatus('Connecting to AIS network…', '#e0a020');
+  try { ws = new WebSocket('wss://stream.aisstream.io/v0/stream'); }
+  catch(e) { showConnStatus('WebSocket error: ' + e.message, '#e08080'); return; }
 
   ws.onopen = () => {
-    console.log('[Sulmara] WebSocket opened');
     wsConnected = true;
     const mmsis = vessels.map(v=>v.mmsi).filter(m=>m&&!m.startsWith('0')&&!m.startsWith('235999'));
-    // Subscribe globally — filter by MMSI client-side so we don't miss vessels
-    // that aisstream hasn't indexed yet under our MMSI list
-    const sub = {
+    ws.send(JSON.stringify({
+      Apikey: AIS_KEY,
       BoundingBoxes: [[[-90,-180],[90,180]]],
       FiltersShipMMSI: mmsis,
       FilterMessageTypes: ['PositionReport','ShipStaticData']
-    };
-    console.log('[Sulmara] Sending subscription for MMSIs:', mmsis);
-    ws.send(JSON.stringify(sub));
-    showConnStatus('Connected — waiting for AIS data…', '#5dcaa5');
+    }));
+    console.log('[Sulmara] Subscribed for MMSIs:', mmsis);
+    showConnStatus('Live AIS connected ✓', '#1d9e75');
     updateHeaderSig();
-
-    // If no data after 15s, resubscribe without MMSI filter to test the pipe
-    setTimeout(() => {
-      if (!lastAisTs && ws && ws.readyState === 1) {
-        console.log('[Sulmara] No data after 15s — resubscribing without MMSI filter to test');
-        showConnStatus('Testing AIS feed (no vessel data yet — broadening search)…', '#e0a020');
-        ws.send(JSON.stringify({
-          BoundingBoxes: [[[50,-5],[62,10]]],  // North Sea bounding box
-          FilterMessageTypes: ['PositionReport']
-        }));
-        // After 10 more seconds, if we still have nothing, report it
-        setTimeout(() => {
-          if (!lastAisTs) {
-            showConnStatus('⚠ AIS feed connected but no signals received. aisstream.io may be experiencing issues, or vessels are out of coverage.', '#e08080');
-            console.warn('[Sulmara] Still no AIS data after broad search');
-          } else {
-            // We got data from the broad search — resubscribe with MMSI filter
-            console.log('[Sulmara] AIS data confirmed working — resubscribing with MMSI filter');
-            ws.send(JSON.stringify({
-              BoundingBoxes: [[[-90,-180],[90,180]]],
-              FiltersShipMMSI: mmsis,
-              FilterMessageTypes: ['PositionReport','ShipStaticData']
-            }));
-          }
-        }, 10000);
-      }
-    }, 15000);
   };
 
   ws.onmessage = function(e) {
     if (typeof e.data === 'string') {
       if (e.data.length >= 20) processAIS(e.data);
     } else {
-      // aisstream sends Blobs — read with FileReader (works in all browsers)
       const fr = new FileReader();
-      fr.onload = function() {
-        const text = fr.result;
-        if (text && text.length >= 20) processAIS(text);
-      };
+      fr.onload = function() { if (fr.result && fr.result.length >= 20) processAIS(fr.result); };
       fr.readAsText(e.data);
     }
   };
 
-  ws.onerror = (e) => {
-    console.error('[Sulmara] WebSocket error event:', e);
-    wsConnected = false;
-    showConnStatus('Connection error — check console (F12) for details', '#e08080');
-    updateHeaderSig();
-  };
+  ws.onerror = () => { wsConnected = false; updateHeaderSig(); };
 
   ws.onclose = (e) => {
-    console.warn('[Sulmara] WebSocket closed. Code:', e.code, 'Reason:', e.reason, 'Clean:', e.wasClean);
     wsConnected = false;
-    showConnStatus('Disconnected (code ' + e.code + '): ' + (e.reason||'no reason') + ' — retrying in 6s…', '#ba7517');
+    console.warn('[Sulmara] Closed:', e.code, e.reason);
     updateHeaderSig();
-    setTimeout(()=>connectWS(getProxy()), 6000);
+    setTimeout(connectWS, 6000);
   };
 }
 
@@ -492,7 +440,7 @@ function showConnStatus(msg, color) {
 function resubscribe() {
   if (!ws||ws.readyState!==1) return;
   const mmsis=vessels.map(v=>v.mmsi).filter(m=>m&&!m.startsWith('0')&&!m.startsWith('235999'));
-  ws.send(JSON.stringify({BoundingBoxes:[[[-90,-180],[90,180]]],FiltersShipMMSI:mmsis,FilterMessageTypes:['PositionReport','ShipStaticData']}));
+  ws.send(JSON.stringify({Apikey:AIS_KEY,BoundingBoxes:[[[-90,-180],[90,180]]],FiltersShipMMSI:mmsis,FilterMessageTypes:['PositionReport','ShipStaticData']}));
 }
 
 function handleAIS(msg) {
@@ -682,7 +630,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   initMap(); redrawAll(); renderSB(); updateIP();
   setTimeout(zoomFleet, 400);
   updateHeaderSig();
-  connectWS(getProxy());
+  connectWS();
 });
 </script>
 </body>
