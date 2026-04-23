@@ -365,6 +365,19 @@ function saveProxy(){
 }
 function dismissBanner(){document.getElementById('setup-banner').classList.remove('show');}
 
+function processAIS(text) {
+  try {
+    const msg = JSON.parse(text);
+    const mmsi = String((msg.MetaData||{}).MMSI||(msg.MetaData||{}).MMSI_String||'');
+    const name = (msg.MetaData||{}).ShipName||'';
+    if (mmsi) console.log('[Sulmara] AIS:', mmsi, name, msg.MessageType);
+    lastAisTs = Date.now();
+    updateHeaderSig();
+    handleAIS(msg);
+    if (slVal===100) { renderSB(); updateIP(); }
+  } catch(err) { /* skip malformed */ }
+}
+
 function connectWS(url) {
   if (!url) { document.getElementById('setup-banner').classList.add('show'); updateHeaderSig(); return; }
   if (ws) { try{ws.close();}catch(e){} }
@@ -426,18 +439,18 @@ function connectWS(url) {
     }, 15000);
   };
 
-  ws.onmessage = async e => {
-    try {
-      // aisstream.io sends data as Blob via the proxy — convert to text first
-      const text = (e.data instanceof Blob) ? await e.data.text() : e.data;
-      const msg = JSON.parse(text);
-      const mmsi = String((msg.MetaData||{}).MMSI||(msg.MetaData||{}).MMSI_String||'?');
-      const name = (msg.MetaData||{}).ShipName || '';
-      console.log('[Sulmara] AIS msg:', msg.MessageType, 'MMSI:', mmsi, name ? '('+name+')' : '');
-      lastAisTs = Date.now();
-      updateHeaderSig();
-      handleAIS(msg);
-    } catch(err){ console.warn('[Sulmara] Parse error:', err, e.data); }
+  ws.onmessage = function(e) {
+    if (typeof e.data === 'string') {
+      if (e.data.length >= 20) processAIS(e.data);
+    } else {
+      // aisstream sends Blobs — read with FileReader (works in all browsers)
+      const fr = new FileReader();
+      fr.onload = function() {
+        const text = fr.result;
+        if (text && text.length >= 20) processAIS(text);
+      };
+      fr.readAsText(e.data);
+    }
   };
 
   ws.onerror = (e) => {
