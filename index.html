@@ -475,17 +475,12 @@ function handleAIS(msg) {
     v.status=navStr(r.NavigationalStatus);
     v.aisTs=Date.now(); lastAisTs=Date.now();
     updateHeaderSig();
-
-    // Smart track append: 15s gap when moving, 5min when stationary
-    const stationary=v.sog<0.5;
-    const last=v.track[v.track.length-1];
-    const gap=last?Date.now()-last.ts:999999;
-    const minGap=stationary?300000:15000;
-    if(gap>=minGap){
-      v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()});
-      if(v.track.length>300) v.track.shift();
-      if(v.route.length>0) v.route[0]={lat:v.lat,lon:v.lon};
-    }
+    // Record every point — AIS sends every 2-10s when underway
+    // Cap at 500 points (~1.5hrs of history at 10s intervals)
+    v.track.push({lat:v.lat,lon:v.lon,spd:v.sog,hdg:v.heading,ts:Date.now()});
+    if(v.track.length>500) v.track.shift();
+    if(v.route.length>0) v.route[0]={lat:v.lat,lon:v.lon};
+    // Redraw this vessel immediately on every update
     if(slVal===100) drawV(v);
   }
 
@@ -497,7 +492,7 @@ function handleAIS(msg) {
     if(r.MaximumStaticDraught>0) v.draft=r.MaximumStaticDraught;
   }
 
-  if(slVal===100){renderSB();updateIP();}
+  if(slVal===100){ renderSB(); updateIP(); }
 }
 
 // ─── Map ──────────────────────────────────────────────────────
