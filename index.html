@@ -440,7 +440,22 @@ function showConnStatus(msg, color) {
 function resubscribe() {
   if (!ws||ws.readyState!==1) return;
   const mmsis=vessels.map(v=>v.mmsi).filter(m=>m&&!m.startsWith('0')&&!m.startsWith('235999'));
+  console.log('[Sulmara] Resubscribing for MMSIs:', mmsis);
   ws.send(JSON.stringify({Apikey:AIS_KEY,BoundingBoxes:[[[-90,-180],[90,180]]],FiltersShipMMSI:mmsis,FilterMessageTypes:['PositionReport','ShipStaticData']}));
+}
+
+// ─── Fleet persistence ────────────────────────────────────────
+// Save the list of tracked MMSIs to localStorage so they survive page refresh
+function saveFleet() {
+  const mmsis = vessels.map(v => v.mmsi);
+  localStorage.setItem('sulmara_fleet', JSON.stringify(mmsis));
+}
+
+function loadFleet() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('sulmara_fleet') || '[]');
+    return saved.filter(m => typeof m === 'string' && m.length > 0);
+  } catch(e) { return []; }
 }
 
 function handleAIS(msg) {
@@ -596,7 +611,17 @@ function hideCtx(){document.getElementById('ctx').classList.remove('show');ctxId
 function ctxZoom(){if(!ctxId)return;const v=vessels.find(x=>x.id===ctxId);if(v)map.flyTo([v.lat,v.lon],8,{duration:1.2});hideCtx();}
 function ctxFit(){hideCtx();zoomFleet();}
 function ctxSel(){if(ctxId)selV(ctxId);hideCtx();}
-function ctxRemove(){if(!ctxId)return;clearLayer(ctxId);const v=vessels.find(x=>x.id===ctxId);if(v)delete mmsiIdx[v.mmsi];vessels=vessels.filter(v=>v.id!==ctxId);if(selId===ctxId){selId=null;updateIP();}hideCtx();renderSB();resubscribe();}
+function ctxRemove(){
+  if(!ctxId)return;
+  clearLayer(ctxId);
+  const v=vessels.find(x=>x.id===ctxId);
+  if(v)delete mmsiIdx[v.mmsi];
+  vessels=vessels.filter(v=>v.id!==ctxId);
+  if(selId===ctxId){selId=null;updateIP();}
+  hideCtx();renderSB();
+  saveFleet();
+  resubscribe();
+}
 document.addEventListener('click',e=>{if(!document.getElementById('ctx').contains(e.target))hideCtx();if(!document.getElementById('vz-wrap').contains(e.target))hideVZMenu();});
 
 // ─── Timeline ─────────────────────────────────────────────────
@@ -625,12 +650,39 @@ function onSrch(val){
   },250);
 }
 function pr(i){document.querySelectorAll('.ri').forEach(e=>e.classList.remove('sel'));const e=document.getElementById('ri'+i);if(e)e.classList.add('sel');srPick=window.__sr[i];setAdd(true);}
-function confirmAdd(){if(!srPick)return;const ex=vessels.find(v=>v.mmsi===srPick.mmsi);if(ex){closeModal();selV(ex.id);return;}const v=addToFleet(srPick);selId=v.id;closeModal();renderSB();updateIP();drawV(v);map.flyTo([v.lat,v.lon],6,{duration:1.5});resubscribe();}
+function confirmAdd(){
+  if(!srPick)return;
+  const ex=vessels.find(v=>v.mmsi===srPick.mmsi);
+  if(ex){closeModal();selV(ex.id);return;}
+  const v=addToFleet(srPick);
+  selId=v.id;
+  closeModal();renderSB();updateIP();drawV(v);
+  map.flyTo([v.lat,v.lon],6,{duration:1.5});
+  saveFleet();
+  resubscribe();
+}
 document.getElementById('mo').addEventListener('click',e=>{if(e.target===document.getElementById('mo'))closeModal();});
 
 // ─── Boot ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded',()=>{
-  ['Ocean Marlin','VOS Gorgeous','Ross Eagle'].forEach(n=>{const s=REGISTRY.find(v=>v.name===n);if(s)addToFleet(s);});
+  // Load saved fleet from localStorage, fall back to default 3
+  const savedMMSIs = loadFleet();
+  const defaultMMSIs = ['257768000','235103024','258156000']; // Ocean Marlin, VOS Gorgeous, Ross Eagle
+  const toLoad = savedMMSIs.length > 0 ? savedMMSIs : defaultMMSIs;
+
+  toLoad.forEach(mmsi => {
+    const src = REGISTRY.find(v => v.mmsi === mmsi);
+    if (src && !vessels.find(v => v.mmsi === mmsi)) addToFleet(src);
+  });
+
+  // If nothing loaded from registry (e.g. custom MMSI not in registry), keep defaults
+  if (!vessels.length) {
+    defaultMMSIs.forEach(mmsi => {
+      const src = REGISTRY.find(v => v.mmsi === mmsi);
+      if (src) addToFleet(src);
+    });
+  }
+
   initMap(); redrawAll(); renderSB(); updateIP();
   setTimeout(zoomFleet, 400);
   updateHeaderSig();
