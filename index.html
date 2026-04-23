@@ -488,12 +488,16 @@ function handleAIS(msg) {
 // ─── Map ──────────────────────────────────────────────────────
 function initMap(){
   map=L.map('map',{zoomControl:false,attributionControl:true,minZoom:2,worldCopyJump:false,maxBounds:[[-85,-200],[85,200]],maxBoundsViscosity:.9}).setView([20,0],2);
+  // OpenStreetMap as default (works on all origins including GitHub Pages)
+  const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19});
+  // Esri satellite — may be blocked by CORS on some hosts
   const sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'© Esri, Maxar',maxZoom:18,crossOrigin:true});
   const lbl=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,crossOrigin:true,opacity:.9});
-  const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:19});
+  // OpenTopoMap as nice alternative
+  const topo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'© OpenTopoMap',maxZoom:17});
   const sea=L.tileLayer('https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',{attribution:'© OpenSeaMap',maxZoom:18,opacity:.7});
-  sat.addTo(map); lbl.addTo(map);
-  L.control.layers({'🛰 Satellite':sat,'🗺 Street map':osm},{'Place labels':lbl,'⚓ Nautical marks':sea},{position:'topright',collapsed:true}).addTo(map);
+  osm.addTo(map);
+  L.control.layers({'🗺 Street map':osm,'🛰 Satellite (Esri)':sat,'🏔 Topo':topo},{'Place labels (satellite only)':lbl,'⚓ Nautical marks':sea},{position:'topright',collapsed:true}).addTo(map);
   map.on('click',e=>{hideCtx();hideVZMenu();if(msActive)handleMsClick(e);});
 }
 
